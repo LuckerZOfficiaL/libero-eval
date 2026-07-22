@@ -25,6 +25,9 @@ class Checkpoint:
     config: str
     # Checkpoint directory (e.g., "checkpoints/pi0_aloha_sim/exp/10000").
     dir: str
+    # Optional override for norm stats. Accepts either a directory containing
+    # `norm_stats.json` or a direct path to `norm_stats.json`.
+    norm_stats_path: str | None = None
 
 
 @dataclasses.dataclass
@@ -65,7 +68,10 @@ def create_default_policy(env: EnvMode, *, default_prompt: str | None = None) ->
     """Create a default policy for the given environment."""
     if checkpoint := DEFAULT_CHECKPOINT.get(env):
         return _policy_config.create_trained_policy(
-            _config.get_config(checkpoint.config), checkpoint.dir, default_prompt=default_prompt
+            _config.get_config(checkpoint.config),
+            checkpoint.dir,
+            default_prompt=default_prompt,
+            norm_stats_path=checkpoint.norm_stats_path,
         )
     raise ValueError(f"Unsupported environment mode: {env}")
 
@@ -75,7 +81,10 @@ def create_policy(args: Args) -> _policy.Policy:
     match args.policy:
         case Checkpoint():
             return _policy_config.create_trained_policy(
-                _config.get_config(args.policy.config), args.policy.dir, default_prompt=args.default_prompt
+                _config.get_config(args.policy.config),
+                args.policy.dir,
+                default_prompt=args.default_prompt,
+                norm_stats_path=args.policy.norm_stats_path,
             )
         case Default():
             return create_default_policy(args.env, default_prompt=args.default_prompt)

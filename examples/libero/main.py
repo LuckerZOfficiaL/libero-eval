@@ -5,17 +5,22 @@ import math
 import pathlib
 
 import imageio
+import libero.libero as libero_pkg
 from libero.libero import benchmark
 from libero.libero import get_libero_path
+from libero.libero import set_libero_default_path
 from libero.libero.envs import OffScreenRenderEnv
 import numpy as np
 from openpi_client import image_tools
 from openpi_client import websocket_client_policy as _websocket_client_policy
+from task_suite_task_map import LIBERO_TASK_MAP
+import torch
 import tqdm
 import tyro
 
 LIBERO_DUMMY_ACTION = [0.0] * 6 + [-1.0]
 LIBERO_ENV_RESOLUTION = 256  # resolution used to render training data
+_ORIGINAL_TORCH_LOAD = torch.load
 
 
 @dataclasses.dataclass
@@ -48,10 +53,18 @@ class Args:
 def eval_libero(args: Args) -> None:
     # Set random seed
     np.random.seed(args.seed)
+    # Make LIBERO resolve benchmark assets from the installed package instead of a stale user config.
+    set_libero_default_path(str(pathlib.Path(libero_pkg.__file__).resolve().parent))
+    # LIBERO init-state files are trusted local pickle payloads and need the pre-PyTorch-2.6 load behavior.
+    torch.load = lambda *load_args, **load_kwargs: _ORIGINAL_TORCH_LOAD(  # type: ignore[assignment]
+        *load_args,
+        **({"weights_only": False} | load_kwargs),
+    )
 
     # Initialize LIBERO task suite
     benchmark_dict = benchmark.get_benchmark_dict()
     task_suite = benchmark_dict[args.task_suite_name]()
+    _apply_repo_task_selection(task_suite, args.task_suite_name)
     num_tasks_in_suite = task_suite.n_tasks
     logging.info(f"Task suite: {args.task_suite_name}")
 
@@ -184,6 +197,23 @@ def eval_libero(args: Args) -> None:
 
     logging.info(f"Total success rate: {float(total_successes) / float(total_episodes)}")
     logging.info(f"Total episodes: {total_episodes}")
+
+
+def _apply_repo_task_selection(task_suite, task_suite_name: str) -> None:
+    configured_tasks = LIBERO_TASK_MAP.get(task_suite_name)
+    if configured_tasks is None:
+        raise ValueError(f"Missing repo task mapping for suite: {task_suite_name}")
+
+    available_tasks = {task.name: task for task in task_suite.tasks}
+    missing_tasks = [task_name for task_name in configured_tasks if task_name not in available_tasks]
+    if missing_tasks:
+        raise ValueError(
+            f"Configured tasks not found in installed LIBERO suite {task_suite_name}: {missing_tasks}"
+        )
+
+    task_suite.tasks = [available_tasks[task_name] for task_name in configured_tasks]
+    task_suite.n_tasks = len(task_suite.tasks)
+    logging.info("Using %d repo-selected tasks for %s", task_suite.n_tasks, task_suite_name)
 
 
 def _get_libero_env(task, resolution, seed):

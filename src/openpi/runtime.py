@@ -41,8 +41,24 @@ def resolve_checkpoint_dir(checkpoint_dir: str | pathlib.Path) -> pathlib.Path:
     return download.maybe_download(str(checkpoint_dir))
 
 
-def load_norm_stats(checkpoint_dir: pathlib.Path) -> dict[str, normalize_lib.NormStats]:
-    return normalize_lib.load(checkpoint_dir / "assets" / checkpoint_asset_id())
+def resolve_norm_stats_path(
+    checkpoint_dir: pathlib.Path,
+    norm_stats_path: str | pathlib.Path | None = None,
+) -> pathlib.Path:
+    if norm_stats_path is None:
+        return checkpoint_dir / "assets" / checkpoint_asset_id()
+
+    path = pathlib.Path(norm_stats_path)
+    if path.name == "norm_stats.json":
+        return path.parent
+    return path
+
+
+def load_norm_stats(
+    checkpoint_dir: pathlib.Path,
+    norm_stats_path: str | pathlib.Path | None = None,
+) -> dict[str, normalize_lib.NormStats]:
+    return normalize_lib.load(resolve_norm_stats_path(checkpoint_dir, norm_stats_path))
 
 
 def normalize_inputs(data: dict[str, Any], norm_stats: dict[str, normalize_lib.NormStats]) -> dict[str, Any]:
@@ -56,7 +72,9 @@ def normalize_inputs(data: dict[str, Any], norm_stats: dict[str, normalize_lib.N
 def unnormalize_outputs(data: dict[str, Any], norm_stats: dict[str, normalize_lib.NormStats]) -> dict[str, Any]:
     action_stats = norm_stats["actions"]
     dim = action_stats.mean.shape[-1]
-    data["actions"] = data["actions"] * (action_stats.std[..., :dim] + 1e-6) + action_stats.mean[..., :dim]
+    actions = np.asarray(data["actions"])
+    actions[..., :dim] = actions[..., :dim] * (action_stats.std[..., :dim] + 1e-6) + action_stats.mean[..., :dim]
+    data["actions"] = actions
     return data
 
 
@@ -67,20 +85,25 @@ class LiberoPolicy:
         *,
         default_prompt: str | None = None,
         pytorch_device: str | None = None,
+        norm_stats_path: str | pathlib.Path | None = None,
     ):
         self._checkpoint_dir = resolve_checkpoint_dir(checkpoint_dir)
         self._default_prompt = default_prompt
         self._input_transform = LiberoInputs()
         self._output_transform = LiberoOutputs()
         self._tokenizer = PaligemmaTokenizer(Pi05LiberoConfig().max_token_len)
-        self._norm_stats = load_norm_stats(self._checkpoint_dir)
+        self._norm_stats_path = resolve_norm_stats_path(self._checkpoint_dir, norm_stats_path)
+        self._norm_stats = normalize_lib.load(self._norm_stats_path)
         self._device = pytorch_device or ("cuda" if torch.cuda.is_available() else "cpu")
 
         model = PI0Pytorch(Pi05LiberoConfig())
         safetensors.torch.load_model(model, str(self._checkpoint_dir / "model.safetensors"))
         model.paligemma_with_expert.to_bfloat16_for_selected_params("bfloat16")
         self._model = model.to(self._device).eval()
-        self.metadata = {"checkpoint_dir": str(self._checkpoint_dir)}
+        self.metadata = {
+            "checkpoint_dir": str(self._checkpoint_dir),
+            "norm_stats_path": str(self._norm_stats_path / "norm_stats.json"),
+        }
 
     def infer(self, obs: dict[str, Any], *, noise: np.ndarray | None = None) -> dict[str, Any]:
         if self._default_prompt is not None and "prompt" not in obs:

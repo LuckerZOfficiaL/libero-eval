@@ -227,7 +227,7 @@ def load_metadata(path: Path) -> dict[str, str]:
         return dict(f.metadata() or {})
 
 
-def manual_merge_lora(
+def manual_apply_lora(
     base_model_path: Path,
     lora_model_path: Path,
     output_path: Path,
@@ -273,8 +273,8 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     if adapter_config_path is None:
-        print(f"No adapter_config.json found next to {adapter_model_path}. Falling back to raw safetensors merge.")
-        merged_keys = manual_merge_lora(
+        print(f"No adapter_config.json found next to {adapter_model_path}. Falling back to raw safetensors apply.")
+        merged_keys = manual_apply_lora(
             base_model_weights_path,
             adapter_model_path,
             output_model_path,
