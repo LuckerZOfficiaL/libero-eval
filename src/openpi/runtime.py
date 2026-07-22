@@ -62,18 +62,31 @@ def load_norm_stats(
 
 
 def normalize_inputs(data: dict[str, Any], norm_stats: dict[str, normalize_lib.NormStats]) -> dict[str, Any]:
+    # pi0.5 (any non-PI0 model) is trained with quantile normalization: map [q01, q99] -> [-1, 1].
+    # Fall back to z-score only if quantile stats are unavailable.
     state_stats = norm_stats["state"]
-    data["state"] = (data["state"] - state_stats.mean[..., : data["state"].shape[-1]]) / (
-        state_stats.std[..., : data["state"].shape[-1]] + 1e-6
-    )
+    n = data["state"].shape[-1]
+    if state_stats.q01 is not None and state_stats.q99 is not None:
+        q01 = state_stats.q01[..., :n]
+        q99 = state_stats.q99[..., :n]
+        data["state"] = (data["state"] - q01) / (q99 - q01 + 1e-6) * 2.0 - 1.0
+    else:
+        data["state"] = (data["state"] - state_stats.mean[..., :n]) / (state_stats.std[..., :n] + 1e-6)
     return data
 
 
 def unnormalize_outputs(data: dict[str, Any], norm_stats: dict[str, normalize_lib.NormStats]) -> dict[str, Any]:
+    # Inverse of quantile normalization on the leading LIBERO action dims covered by the stats.
     action_stats = norm_stats["actions"]
-    dim = action_stats.mean.shape[-1]
     actions = np.asarray(data["actions"])
-    actions[..., :dim] = actions[..., :dim] * (action_stats.std[..., :dim] + 1e-6) + action_stats.mean[..., :dim]
+    if action_stats.q01 is not None and action_stats.q99 is not None:
+        dim = action_stats.q01.shape[-1]
+        q01 = action_stats.q01[..., :dim]
+        q99 = action_stats.q99[..., :dim]
+        actions[..., :dim] = (actions[..., :dim] + 1.0) / 2.0 * (q99 - q01 + 1e-6) + q01
+    else:
+        dim = action_stats.mean.shape[-1]
+        actions[..., :dim] = actions[..., :dim] * (action_stats.std[..., :dim] + 1e-6) + action_stats.mean[..., :dim]
     data["actions"] = actions
     return data
 
