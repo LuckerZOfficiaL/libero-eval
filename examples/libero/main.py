@@ -41,6 +41,7 @@ class Args:
     )
     num_steps_wait: int = 10  # Number of steps to wait for objects to stabilize i n sim
     num_trials_per_task: int = 50  # Number of rollouts per task
+    max_videos_per_task: int = 50  # Cap saved rollout videos per task; new rollouts overwrite the oldest slot
 
     #################################################################################################################
     # Utils
@@ -177,11 +178,20 @@ def eval_libero(args: Args) -> None:
             task_episodes += 1
             total_episodes += 1
 
-            # Save a replay video of the episode
+            # Save a replay video of the episode, keeping at most args.max_videos_per_task
+            # videos per task. Videos are written into rolling slots keyed by episode index,
+            # so the (episode_idx % max_videos_per_task)-th slot is overwritten once the cap
+            # is exceeded, bounding storage per task.
             suffix = "success" if done else "failure"
             task_segment = task_description.replace(" ", "_")
+            slot = episode_idx % args.max_videos_per_task
+            video_dir = pathlib.Path(args.video_out_path)
+            # Drop any existing video in this (task, slot) regardless of its success/failure
+            # suffix, so each slot holds exactly one file and the per-task cap is respected.
+            for stale in video_dir.glob(f"rollout_{task_segment}_{slot:03d}_*.mp4"):
+                stale.unlink()
             imageio.mimwrite(
-                pathlib.Path(args.video_out_path) / f"rollout_{task_segment}_{suffix}.mp4",
+                video_dir / f"rollout_{task_segment}_{slot:03d}_{suffix}.mp4",
                 [np.asarray(x) for x in replay_images],
                 fps=10,
             )
