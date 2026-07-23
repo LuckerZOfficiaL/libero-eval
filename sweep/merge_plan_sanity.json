@@ -1,0 +1,24 @@
+{
+  "_comment": "EXP-3 sanity: merge task1 (mug) + task2 (microwave), eval on both their scenes. Both were ~100% single-task, so a clean 2-task merge should stay near-baseline.",
+  "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+  "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+  "n_trials": 25,
+  "n_workers": 2,
+  "gpu_per_worker": [1, 2],
+  "port_per_worker": [8000, 8001],
+  "results_file": "/home/lzhou/libero-eval/results/merge_results.jsonl",
+  "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+  "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+  "jobs": [
+    {
+      "name": "sanity_merge_task1_task2",
+      "method": "task_arithmetic",
+      "params": {"lambda": 1.0},
+      "adapters": [1, 2],
+      "eval_scenes": [
+        "LIVING_ROOM_SCENE5_put_the_yellow_and_white_mug_on_the_right_plate",
+        "KITCHEN_SCENE7_open_the_microwave"
+      ]
+    }
+  ]
+}

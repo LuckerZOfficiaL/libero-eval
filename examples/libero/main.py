@@ -39,6 +39,7 @@ class Args:
     task_suite_name: str = (
         "libero_spatial"  # Task suite. Options: libero_spatial, libero_object, libero_goal, libero_10, libero_90
     )
+    task_name: str | None = None  # If set, evaluate only this single LIBERO task (overrides the repo task map)
     num_steps_wait: int = 10  # Number of steps to wait for objects to stabilize i n sim
     num_trials_per_task: int = 50  # Number of rollouts per task
     max_videos_per_task: int = 50  # Cap saved rollout videos per task; new rollouts overwrite the oldest slot
@@ -65,7 +66,7 @@ def eval_libero(args: Args) -> None:
     # Initialize LIBERO task suite
     benchmark_dict = benchmark.get_benchmark_dict()
     task_suite = benchmark_dict[args.task_suite_name]()
-    _apply_repo_task_selection(task_suite, args.task_suite_name)
+    _apply_repo_task_selection(task_suite, args.task_suite_name, args.task_name)
     num_tasks_in_suite = task_suite.n_tasks
     logging.info(f"Task suite: {args.task_suite_name}")
 
@@ -209,10 +210,14 @@ def eval_libero(args: Args) -> None:
     logging.info(f"Total episodes: {total_episodes}")
 
 
-def _apply_repo_task_selection(task_suite, task_suite_name: str) -> None:
-    configured_tasks = LIBERO_TASK_MAP.get(task_suite_name)
-    if configured_tasks is None:
-        raise ValueError(f"Missing repo task mapping for suite: {task_suite_name}")
+def _apply_repo_task_selection(task_suite, task_suite_name: str, task_name: str | None = None) -> None:
+    if task_name is not None:
+        # Single-task override: evaluate exactly one LIBERO task, bypassing the repo map.
+        configured_tasks = [task_name]
+    else:
+        configured_tasks = LIBERO_TASK_MAP.get(task_suite_name)
+        if configured_tasks is None:
+            raise ValueError(f"Missing repo task mapping for suite: {task_suite_name}")
 
     available_tasks = {task.name: task for task in task_suite.tasks}
     missing_tasks = [task_name for task_name in configured_tasks if task_name not in available_tasks]

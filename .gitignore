@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 data/
+results/
+sweep/merge_plan.json
+sweep/plan_test.json
