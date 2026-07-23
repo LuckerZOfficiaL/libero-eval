@@ -27,7 +27,7 @@ class LoRAGroup:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Merge a LoRA adapter into a PI0.5 base model.")
+    parser = argparse.ArgumentParser(description="Apply a single LoRA adapter to a PI0.5 base model (writes an applied checkpoint).")
     parser.add_argument(
         "--base-model-dir",
         required=True,
@@ -282,7 +282,7 @@ def main() -> None:
         )
         copy_tree_if_exists(base_model_dir / "assets", args.output_dir / "assets")
         copy_tree_if_exists(lora_checkpoint_dir / "assets", args.output_dir / "assets")
-        print(f"Merged {merged_keys} tensors into {output_model_path}")
+        print(f"Applied {merged_keys} LoRA tensor(s) into {output_model_path}")
         return
 
     print(f"Loading base model from: {base_model_weights_path}")
@@ -297,18 +297,18 @@ def main() -> None:
     print(f"Loading LoRA adapter from: {lora_checkpoint_dir}")
     model = PeftModel.from_pretrained(base_model, lora_checkpoint_dir, is_trainable=False)
 
-    print("Merging LoRA weights into the base model...")
+    print("Applying LoRA weights to the base model...")
     model = model.merge_and_unload()
-    print("Merge complete.")
+    print("Apply complete.")
 
-    print(f"Saving merged model to: {args.output_dir}")
+    print(f"Saving applied checkpoint to: {args.output_dir}")
     model.config.save_pretrained(args.output_dir)
     safetensors.torch.save_model(model, output_model_path)
 
     copy_tree_if_exists(base_model_dir / "assets", args.output_dir / "assets")
     copy_tree_if_exists(lora_checkpoint_dir / "assets", args.output_dir / "assets")
     shutil.copy2(adapter_config_path, args.output_dir / "adapter_config.json")
-    print(f"Merged model written to: {args.output_dir}")
+    print(f"Applied checkpoint written to: {args.output_dir}")
 
 
 if __name__ == "__main__":

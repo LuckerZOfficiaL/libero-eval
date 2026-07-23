@@ -104,7 +104,7 @@ uv run python scripts/serve_policy.py \
   --policy.norm-stats-path /path/to/norm_stats_dir
 ```
 
-For the merged checkpoint created in this workspace:
+For the applied checkpoint created in this workspace:
 
 ```bash
 uv run python scripts/serve_policy.py \
@@ -113,15 +113,19 @@ uv run python scripts/serve_policy.py \
   --policy.dir /media/pinas/mehdi/libero90_lora/task0/merged_model
 ```
 
-## Merge a LoRA checkpoint
+## Apply a LoRA adapter
 
-The merge script is modeled after the PEFT-based workflow used in `dragdrop-vlas`.
+> Terminology: **apply** = fuse a *single* LoRA adapter into the base weights (this section).
+> **merge** is reserved for the research operation of combining *multiple* LoRAs into one multi-task
+> policy (not implemented yet). See `AGENTS.md`.
+
+The apply script is modeled after the PEFT-based workflow used in `dragdrop-vlas`.
 
 Inputs:
 
 - base model directory containing `model.safetensors`, or a direct path to `model.safetensors`
 - LoRA checkpoint directory containing `adapter_model.safetensors` and `adapter_config.json`, or a direct path to the adapter safetensors file
-- output directory for the merged checkpoint
+- output directory for the applied checkpoint
 
 Usage:
 
@@ -146,10 +150,10 @@ Output:
 
 If your LoRA directory uses a different filename such as `task0_adapter.safetensors`, either:
 
-- rename or symlink it to `adapter_model.safetensors` before running the merge with the directory path, or
+- rename or symlink it to `adapter_model.safetensors` before running apply with the directory path, or
 - pass the adapter `.safetensors` file path directly instead of the directory.
 
-The merge command used for the local checkpoint was:
+The apply command used for the local checkpoint was:
 
 ```bash
 ln -sfn task0_adapter.safetensors /media/pinas/mehdi/libero90_lora/task0/adapter_model.safetensors

@@ -8,17 +8,29 @@ The current practical workflow is:
 
 1. start from a PI0.5 PyTorch backbone
 2. apply a single-task LoRA adapter onto that backbone
-3. serve the resulting merged model
+3. serve the resulting applied checkpoint
 4. evaluate selected LIBERO tasks in simulation
 
 The larger research goal is not implemented here yet: develop model-merging methods that combine multiple task-specific LoRAs into one policy that can solve multiple tasks. At the moment, the LoRAs are single-task.
+
+## Terminology: "apply" vs "merge"
+
+These are two **distinct** operations, kept strictly separate in this repo. Do not use "merge" for the first one.
+
+- **apply** — fuse a *single* LoRA adapter into the base PI0.5 weights, producing one standalone
+  checkpoint (base + that one adapter). This is what [scripts/apply_lora.py](scripts/apply_lora.py)
+  does; its output is an **applied checkpoint**. (Some pre-existing external directories are named
+  `merged_model` — those are *applied* checkpoints under the old naming; treat the name as legacy.)
+- **merge** — the *research* operation: combine *multiple* task-specific LoRA adapters into a single
+  **multi-task** policy. This is the open direction (see Current Research Direction) and is **not
+  implemented yet**. In this repo, "merge" should only ever mean multi-LoRA / multi-task merging.
 
 ## Key Files
 
 - [examples/libero/main.py](/media/ssd/usr/mehdi/libero-eval/examples/libero/main.py): LIBERO evaluation entrypoint.
 - [examples/libero/task_suite_task_map.py](/media/ssd/usr/mehdi/libero-eval/examples/libero/task_suite_task_map.py): repo-local task selection map. Comment out tasks here to exclude them from evaluation.
 - [examples/libero/libero90_tasks.jsonl](/media/ssd/usr/mehdi/libero-eval/examples/libero/libero90_tasks.jsonl): mapping between a `libero_90` task and its LoRA ID / task index.
-- [scripts/apply_lora.py](/media/ssd/usr/mehdi/libero-eval/scripts/apply_lora.py): applies a LoRA adapter to the base PyTorch model and writes a merged checkpoint.
+- [scripts/apply_lora.py](/media/ssd/usr/mehdi/libero-eval/scripts/apply_lora.py): **applies** a single LoRA adapter to the base PyTorch model and writes an applied checkpoint.
 - [scripts/serve_policy.py](/media/ssd/usr/mehdi/libero-eval/scripts/serve_policy.py): websocket policy server used by the simulator client.
 - [src/openpi/runtime.py](/media/ssd/usr/mehdi/libero-eval/src/openpi/runtime.py): runtime loader for LIBERO inference. Expects `model.safetensors` and `norm_stats.json`.
 - [examples/libero/README.md](/media/ssd/usr/mehdi/libero-eval/examples/libero/README.md): LIBERO-specific local notes.
@@ -27,7 +39,7 @@ The larger research goal is not implemented here yet: develop model-merging meth
 
 - Base backbone: `/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors`
 - Task-specific LoRAs: `/media/pinas/mehdi/libero90_lora`
-- Local merged checkpoint example: `/media/pinas/mehdi/libero90_lora/task0/merged_model`
+- Applied-checkpoint example (legacy dir name `merged_model`): `/media/pinas/mehdi/libero90_lora/task0/merged_model`
 - Dedicated LIBERO-90 norm stats file: `/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json`
 
 Do not assume these assets are copied into this repo. This codebase references them as external filesystem dependencies.
@@ -100,7 +112,7 @@ This matters because:
 - that default download does not contain `model.safetensors`
 - so serving the default LIBERO checkpoint path is not sufficient for this workflow
 
-In practice, serve a local merged PyTorch checkpoint via `policy:checkpoint`.
+In practice, serve a local applied PyTorch checkpoint via `policy:checkpoint`.
 
 ## Applying A Single-Task LoRA
 
@@ -110,7 +122,7 @@ Typical inputs:
 
 - base model: `/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors`
 - LoRA checkpoint directory: something under `/media/pinas/mehdi/libero90_lora/taskX`
-- output directory: a local merged checkpoint directory
+- output directory: a local applied-checkpoint directory
 
 Example:
 
@@ -132,7 +144,7 @@ ln -sfn /media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json \
 
 ## Starting The Policy Server
 
-Serve the merged model with an explicit checkpoint path:
+Serve the applied checkpoint with an explicit checkpoint path:
 
 ```bash
 source .venv/bin/activate
@@ -191,7 +203,7 @@ MUJOCO_GL=glx uv run python examples/libero/main.py --args.task-suite-name liber
 
 ## Recommended Workflow For A Coding Agent
 
-When asked to work on LIBERO evaluation or LoRA merging in this repo:
+When asked to work on LIBERO evaluation, LoRA application (single adapter), or multi-LoRA merging (research) in this repo:
 
 1. Read [examples/libero/main.py](/media/ssd/usr/mehdi/libero-eval/examples/libero/main.py), [examples/libero/task_suite_task_map.py](/media/ssd/usr/mehdi/libero-eval/examples/libero/task_suite_task_map.py), [scripts/apply_lora.py](/media/ssd/usr/mehdi/libero-eval/scripts/apply_lora.py), and [src/openpi/runtime.py](/media/ssd/usr/mehdi/libero-eval/src/openpi/runtime.py) first.
 2. Confirm whether the user is working on evaluation plumbing, LoRA application, or new model-merging research code.
