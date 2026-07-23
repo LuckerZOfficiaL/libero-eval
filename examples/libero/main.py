@@ -42,7 +42,7 @@ class Args:
     task_name: str | None = None  # If set, evaluate only this single LIBERO task (overrides the repo task map)
     num_steps_wait: int = 10  # Number of steps to wait for objects to stabilize i n sim
     num_trials_per_task: int = 50  # Number of rollouts per task
-    max_videos_per_task: int = 50  # Cap saved rollout videos per task; new rollouts overwrite the oldest slot
+    save_videos: str = "all"  # videos per task: "all" | 0/"none" | k>0 (first k) | k<0 (last |k|, rolling)
 
     #################################################################################################################
     # Utils
@@ -53,6 +53,20 @@ class Args:
 
 
 def eval_libero(args: Args) -> None:
+    # Video-saving policy (args.save_videos), per task/scene:
+    #   "all"      -> keep every rollout (one file per episode)
+    #   0 / "none" -> save nothing (also skips per-step frame capture, the main cost)
+    #   k  (k > 0) -> keep the FIRST k rollouts (episodes 0..k-1); once k are saved, later ones don't record
+    #   -k (k < 0) -> keep the LAST |k| rollouts, in rolling slots (episode_idx % |k|), overwriting older ones
+    sv = str(args.save_videos).strip().lower()
+    if sv == "all":
+        vid_mode, vid_k = "all", 0
+    elif sv in ("0", "none", "off", ""):
+        vid_mode, vid_k = "none", 0
+    else:
+        _n = int(sv)
+        vid_mode, vid_k = ("first" if _n > 0 else "last"), abs(_n)
+
     # Set random seed
     np.random.seed(args.seed)
     # Make LIBERO resolve benchmark assets from the installed package instead of a stale user config.
@@ -114,6 +128,9 @@ def eval_libero(args: Args) -> None:
             # Setup
             t = 0
             replay_images = []
+            # Record this episode's video? "first k" saves only episodes 0..k-1; "last k" always
+            # records (rolling); "all" always; "none" never. Skips frame capture when not recording.
+            record_video = (vid_mode == "all") or (vid_mode == "last") or (vid_mode == "first" and episode_idx < vid_k)
 
             logging.info(f"Starting episode {task_episodes+1}...")
             while t < max_steps + args.num_steps_wait:
@@ -136,8 +153,9 @@ def eval_libero(args: Args) -> None:
                         image_tools.resize_with_pad(wrist_img, args.resize_size, args.resize_size)
                     )
 
-                    # Save preprocessed image for replay video
-                    replay_images.append(img)
+                    # Save preprocessed image for replay video (skip entirely when not recording)
+                    if record_video:
+                        replay_images.append(img)
 
                     if not action_plan:
                         # Finished executing previous action chunk -- compute new chunk
@@ -179,23 +197,23 @@ def eval_libero(args: Args) -> None:
             task_episodes += 1
             total_episodes += 1
 
-            # Save a replay video of the episode, keeping at most args.max_videos_per_task
-            # videos per task. Videos are written into rolling slots keyed by episode index,
-            # so the (episode_idx % max_videos_per_task)-th slot is overwritten once the cap
-            # is exceeded, bounding storage per task.
-            suffix = "success" if done else "failure"
-            task_segment = task_description.replace(" ", "_")
-            slot = episode_idx % args.max_videos_per_task
-            video_dir = pathlib.Path(args.video_out_path)
-            # Drop any existing video in this (task, slot) regardless of its success/failure
-            # suffix, so each slot holds exactly one file and the per-task cap is respected.
-            for stale in video_dir.glob(f"rollout_{task_segment}_{slot:03d}_*.mp4"):
-                stale.unlink()
-            imageio.mimwrite(
-                video_dir / f"rollout_{task_segment}_{slot:03d}_{suffix}.mp4",
-                [np.asarray(x) for x in replay_images],
-                fps=10,
-            )
+            # Save this episode's replay video per the save_videos policy (see top of eval_libero).
+            # slot: rolling (episode_idx % |k|) for "last k" so only the last |k| survive; otherwise
+            # unique per episode ("all" and "first k" write each once and never overwrite).
+            if record_video:
+                suffix = "success" if done else "failure"
+                task_segment = task_description.replace(" ", "_")
+                slot = (episode_idx % vid_k) if vid_mode == "last" else episode_idx
+                video_dir = pathlib.Path(args.video_out_path)
+                # Drop any existing video in this (task, slot) regardless of its success/failure
+                # suffix, so each slot holds exactly one file and the per-task cap is respected.
+                for stale in video_dir.glob(f"rollout_{task_segment}_{slot:03d}_*.mp4"):
+                    stale.unlink()
+                imageio.mimwrite(
+                    video_dir / f"rollout_{task_segment}_{slot:03d}_{suffix}.mp4",
+                    [np.asarray(x) for x in replay_images],
+                    fps=10,
+                )
 
             # Log current results
             logging.info(f"Success: {done}")

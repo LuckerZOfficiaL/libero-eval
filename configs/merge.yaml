@@ -13,17 +13,22 @@ method: [task_arithmetic, ties, average]     # one method, OR a list to sweep: [
 # use its default. Non-default values get appended to the result file name (e.g. task_1_2_ties_density0.3).
 params:
   task_arithmetic:
-    lambda: 1             # scaling of the summed task deltas (ΔW = λ · Σ ΔWᵢ)
+    lambda: 0.7             # scaling of the summed task deltas (ΔW = λ · Σ ΔWᵢ)
   average: {}               # (no hyperparameters)
   ties:
     density: 0.2            # fraction of each task's delta kept (top-|weight| per module)
-    lambda: 1.0             # scaling of the merged delta
+    lambda: 0.7             # scaling of the merged delta
 
 # --- what to EVALUATE on ---
 eval_tasks: auto            # 'auto' = the tasks being merged (in-distribution retention)
 # eval_tasks: [3, 4]                                  # task indices -> their scenes (held-out transfer)
 # eval_tasks: ["KITCHEN_SCENE7_open_the_microwave"]   # explicit LIBERO scene name(s)
 
-# --- run settings ---
+# --- general run settings (apply to every eval in the run) ---
 trials: 10                  # rollouts per (pair, scene) eval
 workers: 2                  # parallel workers (2 = one server per P6000; use 4 for the full set)
+save_videos: 0            # rollout videos to keep per task:
+                            #   all -> save every rollout (one file each)
+                            #   0   -> save none (fastest; also skips frame capture)
+                            #   k>0 -> keep the FIRST k rollouts, e.g. 3
+                            #   k<0 -> keep the LAST |k| (rolling/overwrite), e.g. -1 keeps just the latest

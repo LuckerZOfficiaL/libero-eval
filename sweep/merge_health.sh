@@ -48,3 +48,5 @@ for f in sorted(glob.glob(rd + "/*.jsonl")):
 PY
 echo "--- last events ---"
 tail -6 results/merge_logs/orchestrator.log 2>/dev/null
+echo "--- overall ---"
+echo "progress    : $OK / $TOTAL (pair,scene) evals   |   errors: $ERR"

@@ -59,7 +59,7 @@ reference the multi-LoRA merging methods (EXP-3) must match or beat.
 
 ---
 
-## EXP-3 · Multi-LoRA merging methods 🔵 running (scoping + sanity)
+## EXP-3 · Multi-LoRA merging methods 🔵 running (Stage 2 passed → full set next)
 
 **Motivation.** The actual research direction — methods to *merge* multiple task-specific LoRA
 adapters into a single policy that performs multiple LIBERO tasks, tested on the same harness and
@@ -101,7 +101,16 @@ retention). Results saved per pair+method in `results/merge/task_<a>_<b>_<method
   | ties (d=0.2) | 90% | 70% | **80%** |
   | task_arithmetic (lambda=1) | 0% | 30% | **15%** |
 
-**Result (in progress).** On this pair, **average >> ties >> task_arithmetic(lambda=1)**. Mechanistic
+**Result (2026-07-23).** Pairwise merging works; **merge scale lambda is the dominant knob**.
+
+- lambda-sweep (task_arithmetic, pair 1:2): lambda 0.3->40%, 0.5->95%, **0.7->100%**, 1.0->15%.
+  Non-monotonic sweet spot ~0.7 (too small under-fits, too large interferes). average = ta(lambda=0.5).
+- Stage 2 (5 pairs x {average,ties}, baseline mean 93.6%): average **88.0%**, ties **86.6%** mean
+  retention; no collapses, task_2_3/task_4_5 perfect, harder pairs task_6_7/task_8_9 drop most.
+- Methods validated bit-exact vs PEFT's canonical `ties`/`task_arithmetic` (0.0 err).
+- **Passes Stage 2 -> next: full set (38 pairs)**, and pin the lambda optimum (~0.6-0.8).
+
+**Result (superseded).** On this pair, average >> ties >> task_arithmetic(lambda=1). Mechanistic
 read: average = task_arithmetic at lambda=0.5; summing both full task deltas (lambda=1) over-shoots and
 tasks interfere (microwave collapses to 0%). **The merge scale lambda is the dominant knob.** Next: sweep
 task_arithmetic lambda (e.g. 0.3/0.5/0.7) to confirm, then advance average/ties to 5 pairs.

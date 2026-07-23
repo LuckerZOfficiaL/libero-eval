@@ -41,6 +41,17 @@ bash sweep/run.sh --pairs "1:2,3:4,5:6" --method "task_arithmetic,ties,average" 
 → `results/merge/task_1_2_task_arithmetic.jsonl`, `…task_1_2_ties.jsonl`, … (9 files).
 In YAML: `pairs: "1:2,3:4"` and `method: [task_arithmetic, ties]`. Use `--workers 4` for big sweeps.
 
+### N-way merges (triplets, …)
+Groups aren't limited to pairs. Give more members with `:` (`0:1:2` = a triplet), or use
+`--scope N --group-size K` for N disjoint K-task groups:
+```bash
+bash sweep/run.sh --pairs 0:1:2 --method average                       # one triplet
+bash sweep/run.sh --scope 5 --group-size 3 --method "task_arithmetic,average" --params '{"lambda":0.7}'
+```
+Each group is merged into one policy and evaluated on the **union of its members' scenes**. Results:
+`results/merge/task_0_1_2_<method>.jsonl`. (`--params` applies only to the params a method actually
+has, so a shared `lambda` won't mis-tag `average`.)
+
 ---
 
 ## The knobs
@@ -49,11 +60,13 @@ In YAML: `pairs: "1:2,3:4"` and `method: [task_arithmetic, ties]`. Use `--worker
 |---|---|---|---|
 | Tasks to **merge** | `--pairs 1:2` (or `1:2,3:4`) | `pairs` | `1:2` |
 | …or a scope | `--scope 5` / `--scope all` | `scope` | — |
+| Group size | `--group-size 3` (triplets) | `group_size` | `2` (pairs) |
 | **Method** | `--method ties` | `method` | `task_arithmetic` |
 | Method **params** | `--params '{"density":0.3}'` | `params` (per-method blocks) | see below |
 | Tasks to **eval** | `--eval-tasks auto` (or `3,4` / scene names) | `eval_tasks` | `auto` |
 | **Rollouts**/eval | `--trials 10` | `trials` | `10` |
 | Parallel workers | `--workers 4` | `workers` | `2` |
+| Save **videos** | `--save-videos -1` (`all`/`0`/`±k`) | `save_videos` | `all` |
 
 **Methods & their hyperparameters:**
 - `task_arithmetic` — ΔW = λ·Σ deltas. Params: `{lambda: 1.0}`.
@@ -69,6 +82,14 @@ params:
   ties: {density: 0.2, lambda: 1.0}
 ```
 Defaults are kept out of the file name; changing one tags it (`task_1_2_ties_density0.3`).
+
+**Saving videos (`save_videos`)** — video encoding costs ~1–3 s/rollout plus disk, so cap or skip it
+on big sweeps. The value is a signed count:
+- `all` (default) — one file per rollout, nothing overwritten.
+- `0` / `none` — save nothing (fastest; also skips per-step frame capture).
+- **`k > 0`** — keep the **first k** rollouts (episodes 0…k-1); later ones don't record. e.g. `3`.
+- **`k < 0`** — keep the **last |k|** rollouts, rolling/overwriting; e.g. `-1` always overwrites and
+  keeps just the latest, `-3` keeps the final three.
 
 **Tasks to evaluate on (`eval_tasks`):**
 - `auto` (default) — the pair's own scenes (in-distribution **retention**).
@@ -90,8 +111,9 @@ Rollout videos: `results/merge_videos/<job>/<scene>/*.mp4`.
 
 ### Check progress (like `health.sh`)
 ```bash
-bash sweep/merge_health.sh          # progress, servers, GPUs, per-pair results so far
-tmux attach -t merge                # live feed  (detach: Ctrl-b then d)
+bash sweep/merge_health.sh          # one-shot: progress, servers, GPUs, per-pair results so far
+bash sweep/merge_watch.sh           # LIVE: same thing, auto-refresh every 15s (Ctrl-C to stop)
+tmux attach -t merge                # raw orchestrator feed  (detach: Ctrl-b then d)
 ```
 
 ### Read / compare results
@@ -138,9 +160,10 @@ never overwrite each other — `merge_summary.py` shows them side by side.
 | `sweep/run.sh` | one command: generate plan + launch |
 | `configs/merge.yaml` | editable config (alternative to flags) |
 | `sweep/make_merge_plan.py` | plan generator (flags/YAML → `sweep/merge_plan.json`) |
-| `sweep/merge_loras.py` | the merge itself (N adapters + method → applied checkpoint) |
+| `scripts/merge_loras.py` | the merge itself (N adapters + method → applied checkpoint) |
 | `sweep/merge_orchestrator.py` | build → serve → eval → record, parallel + resumable |
-| `sweep/merge_health.sh` | progress/health check |
+| `sweep/merge_health.sh` / `sweep/merge_watch.sh` | health check (one-shot / live) |
+| `sweep/run.sh` · `sweep/stop.sh` | launch · stop |
 | `sweep/merge_summary.py` | merged-vs-baseline retention table |
 | `results/merge/` | per-pair-method result files |
 | `results/baseline_summary.md` | single-task baseline (the comparison bar) |

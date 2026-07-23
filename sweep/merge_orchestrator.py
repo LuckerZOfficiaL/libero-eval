@@ -23,6 +23,7 @@ PLAN = sys.argv[1] if len(sys.argv) > 1 else f"{REPO}/sweep/merge_plan.json"
 plan = json.load(open(PLAN))
 JOBS = plan["jobs"]
 BASE, NORM, NTRIALS, NW = plan["base_model"], plan["norm_stats"], plan["n_trials"], plan["n_workers"]
+SAVE_VIDEOS = str(plan.get("save_videos", "all"))   # 'all' | '0'/'none' | k (last k) — passed to main.py
 GPUS, PORTS = plan["gpu_per_worker"], plan["port_per_worker"]
 RESULTS_DIR = plan.get("results_dir", f"{REPO}/results/merge")   # one file per job: <job>.jsonl
 VIDEOS_DIR = plan.get("videos_dir", f"{REPO}/results/merge_videos")
@@ -108,6 +109,7 @@ def run_eval(scene, gpu, port, worker, job_name):
         lf.write(f"\n===== job={job_name} scene={scene} =====\n"); lf.flush()
         subprocess.run([VENV_PY, "examples/libero/main.py", "--args.task-suite-name", "libero_90",
                         "--args.task-name", scene, "--args.num-trials-per-task", str(NTRIALS),
+                        f"--args.save-videos={SAVE_VIDEOS}",   # = form: safe for negative values (last-k)
                         "--args.port", str(port), "--args.video-out-path", vids],
                        cwd=REPO, env=env, stdout=lf, stderr=subprocess.STDOUT)
     text = open(logf).read().split(f"===== job={job_name} scene={scene} =====")[-1]
