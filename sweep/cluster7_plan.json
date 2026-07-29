@@ -1,0 +1,110 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "n_trials": 10,
+ "n_workers": 4,
+ "gpu_per_worker": [
+  1,
+  2,
+  1,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "jobs": [
+  {
+   "name": "cluster7_book_probe_0",
+   "method": "average",
+   "params": {},
+   "adapters": [
+    8,
+    17,
+    19,
+    26,
+    34,
+    49,
+    60
+   ],
+   "eval_scenes": [
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy",
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy",
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy"
+   ]
+  },
+  {
+   "name": "cluster7_book_probe_1",
+   "method": "average",
+   "params": {},
+   "adapters": [
+    8,
+    17,
+    19,
+    26,
+    34,
+    49,
+    60
+   ],
+   "eval_scenes": [
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy",
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy",
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy",
+    "STUDY_SCENE4_pick_up_the_book_in_the_middle_and_place_it_on_the_cabinet_shelf",
+    "STUDY_SCENE4_pick_up_the_book_on_the_left_and_place_it_on_top_of_the_shelf",
+    "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "name": "cluster7_ctrl_probe_0",
+   "method": "average",
+   "params": {},
+   "adapters": [
+    7,
+    22,
+    33,
+    51,
+    52,
+    59,
+    73
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it",
+    "KITCHEN_SCENE3_turn_on_the_stove",
+    "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet",
+    "KITCHEN_SCENE9_turn_on_the_stove",
+    "LIVING_ROOM_SCENE1_pick_up_the_tomato_sauce_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "cluster7_ctrl_probe_1",
+   "method": "average",
+   "params": {},
+   "adapters": [
+    7,
+    22,
+    33,
+    51,
+    52,
+    59,
+    73
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_tomato_sauce_and_put_it_in_the_basket",
+    "LIVING_ROOM_SCENE4_stack_the_left_bowl_on_the_right_bowl_and_place_them_in_the_tray",
+    "LIVING_ROOM_SCENE5_put_the_red_mug_on_the_left_plate",
+    "STUDY_SCENE1_pick_up_the_yellow_and_white_mug_and_place_it_to_the_right_of_the_caddy"
+   ]
+  }
+ ]
+}

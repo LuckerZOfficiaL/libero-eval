@@ -75,17 +75,33 @@ def port_open(port):
     with socket.socket() as s:
         s.settimeout(1); return s.connect_ex(("127.0.0.1", port)) == 0
 
-def build_merge(job, worker):
-    out = f"{SHM}/w{worker}/merged"
-    subprocess.run(["rm", "-rf", out], check=False)
-    os.makedirs(out, exist_ok=True)
+def job_sig(job):
+    """Merge signature: jobs with identical (adapters, method, params) share one built model."""
+    import hashlib
     adapters = [adapter_file(i) for i in job["adapters"]]
+    return hashlib.md5(json.dumps([adapters, job["method"], job.get("params", {})]).encode()).hexdigest()[:16]
+
+def build_merge(job, worker):
+    # Cache by merge signature — e.g. several probe jobs splitting one soup's eval scenes build
+    # ONCE. A cached model is evicted when the last pending job that needs it finishes (refcount
+    # in SIG_REMAINING), so heterogeneous plans don't accumulate models in tmpfs.
+    sig = job_sig(job)
+    adapters = [adapter_file(i) for i in job["adapters"]]
+    out = f"{SHM}/cache/{sig}"
+    if os.path.exists(f"{out}/model.safetensors"):
+        log(worker, f"{job['name']}: reusing cached build {sig}")
+        return out
+    tmp = f"{out}.build"
+    subprocess.run(["rm", "-rf", tmp, out], check=False)
+    os.makedirs(tmp, exist_ok=True)
     cmd = [VENV_PY, "scripts/merge_loras.py", "--base-model-dir", BASE, "--adapters", *adapters,
            "--method", job["method"], "--params", json.dumps(job.get("params", {})),
-           "--output-dir", out, "--norm-stats", NORM]
+           "--output-dir", tmp, "--norm-stats", NORM]
     r = subprocess.run(cmd, cwd=REPO, env=dict(os.environ, UV_CACHE_DIR=CACHE), capture_output=True, text=True)
     if r.returncode != 0:
-        raise RuntimeError(f"merge build failed: {(r.stderr or r.stdout)[-600:]}")
+        subprocess.run(["rm", "-rf", tmp], check=False)
+        raise RuntimeError(f"merge build failed (rc={r.returncode}): {(r.stderr or r.stdout)[-600:]}")
+    os.rename(tmp, out)
     return out
 
 def start_server(mergedir, gpu, port, worker):
@@ -136,7 +152,7 @@ def worker_fn(worker, job_q):
                 md = build_merge(job, worker)
                 log(worker, f"{job['name']}: serving gpu={gpu} port={port}")
                 server = start_server(md, gpu, port, worker); servers[worker] = server
-                subprocess.run(["rm", "-rf", md], check=False)   # weights on GPU now
+                # NOTE: cached build dirs are kept (other jobs may share them); cleared in main at end.
             for scene in scenes:
                 t0 = time.time()
                 rate, neps = run_eval(scene, gpu, port, worker, job["name"])
@@ -154,20 +170,32 @@ def worker_fn(worker, job_q):
             log(worker, f"{job['name']}: ERROR {ex}")
             record({"job": job["name"], "scenes": scenes, "status": "error", "error": str(ex)[:400]})
         finally:
+            sig = job_sig(job)
+            with sig_lock:
+                SIG_REMAINING[sig] -= 1
+                if SIG_REMAINING[sig] <= 0:
+                    subprocess.run(["rm", "-rf", f"{SHM}/cache/{sig}"], check=False)
             if server is not None:
                 try: server.terminate(); server.wait(timeout=20)
                 except Exception: server.kill()
                 servers.pop(worker, None); time.sleep(2)
     log(worker, "WORKER DONE")
 
+sig_lock = threading.Lock()
+SIG_REMAINING: dict = {}
+
 if __name__ == "__main__":
+    subprocess.run(["rm", "-rf", f"{SHM}/cache"], check=False)   # stale cached builds from prior runs
     job_q = queue.Queue()
-    for job in JOBS:
-        if any((job["name"], s) not in done for s in job["eval_scenes"]):
-            job_q.put(job)
+    import collections
+    pending = [job for job in JOBS if any((job["name"], s) not in done for s in job["eval_scenes"])]
+    SIG_REMAINING.update(collections.Counter(job_sig(job) for job in pending))
+    for job in pending:
+        job_q.put(job)
     log("main", f"plan={PLAN} jobs={job_q.qsize()}/{len(JOBS)} to-do, up to {NW} in parallel (2/GPU), "
                 f"trials={NTRIALS}, already_done={len(done)}")
     threads = [threading.Thread(target=worker_fn, args=(w, job_q)) for w in range(NW)]
     for t in threads: t.start()
     for t in threads: t.join()
+    subprocess.run(["rm", "-rf", f"{SHM}/cache"], check=False)
     log("main", "ALL WORKERS DONE")

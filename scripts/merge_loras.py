@@ -101,12 +101,25 @@ def main() -> None:
     base_dir, base_weights = al.resolve_base_model_path(args.base_model_dir)
     merged = safetensors.torch.load_file(str(base_weights))     # updated in place -> the output
 
-    # load every adapter's LoRA groups once (small), and map each targeted base weight -> contributors
-    adapters = [(al.extract_lora_groups(safetensors.torch.load_file(str(f))), adapter_scale(f)) for f in args.adapters]
+    # Adapters are accessed LAZILY via safe_open handles (never all loaded at once): with many
+    # adapters (e.g. a 75-way soup) upfront loading alone is ~14 GB and OOM-kills the build.
+    # Each handle keeps a stem -> {a/b/alpha -> tensor key} map; tensors are read per module.
+    handles = []
+    for f in args.adapters:
+        h = safetensors.safe_open(str(f), framework="pt")
+        stems: dict[str, dict[str, str]] = {}
+        for key in h.keys():
+            parsed = al.parse_lora_key(key)
+            if parsed is None:
+                continue
+            stem, kind = parsed
+            stems.setdefault(stem, {})[kind] = key
+        handles.append((h, stems, adapter_scale(f)))
+
     contributors: dict[str, list[tuple[int, str]]] = {}
-    for ai, (groups, _scale) in enumerate(adapters):
-        for stem, g in groups.items():
-            if g.a is None or g.b is None:
+    for ai, (_h, stems, _scale) in enumerate(handles):
+        for stem, keys in stems.items():
+            if "a" not in keys or "b" not in keys:
                 continue
             base_key = al.resolve_base_key(merged, stem)
             if base_key is None:
@@ -116,17 +129,35 @@ def main() -> None:
     if not contributors:
         raise ValueError("no LoRA deltas found across the given adapters")
 
-    # one module at a time: gather its deltas across adapters, combine, add to base, free
+    def load_delta(ai: int, stem: str, base: torch.Tensor) -> torch.Tensor:
+        h, stems, fallback_scale = handles[ai]
+        keys = stems[stem]
+        a = h.get_tensor(keys["a"]).to(torch.float32)
+        b = h.get_tensor(keys["b"]).to(torch.float32)
+        alpha = float(h.get_tensor(keys["alpha"]).item()) if "alpha" in keys else None
+        s = alpha / al.infer_rank(a) if alpha is not None else fallback_scale
+        return s * al.compute_delta(base, a, b)
+
+    # one module at a time: gather its deltas across adapters, combine, add to base, free.
+    # average/task_arithmetic accumulate a running sum (only ONE delta alive besides the
+    # accumulator — a k-delta list is multi-GB for big modules at large k); ties needs the
+    # full per-module list, so it goes through combine() (fine at the small k it's used with).
     for base_key, lst in contributors.items():
-        deltas = []
-        for ai, stem in lst:
-            groups, scale = adapters[ai]
-            g = groups[stem]
-            s = g.alpha / al.infer_rank(g.a) if g.alpha is not None else scale
-            deltas.append(s * al.compute_delta(merged[base_key], g.a.to(torch.float32), g.b.to(torch.float32)))
-        combined = combine(deltas, args.method, params)
+        if args.method in ("average", "task_arithmetic"):
+            acc = None
+            for ai, stem in lst:
+                d = load_delta(ai, stem, merged[base_key])
+                acc = d if acc is None else acc.add_(d)
+                del d
+            combined = acc.div_(len(lst)) if args.method == "average" \
+                else acc.mul_(float(params.get("lambda", 1.0)))
+            del acc
+        else:
+            deltas = [load_delta(ai, stem, merged[base_key]) for ai, stem in lst]
+            combined = combine(deltas, args.method, params)
+            del deltas
         merged[base_key] = (merged[base_key].to(torch.float32) + combined).to(merged[base_key].dtype)
-        del deltas, combined
+        del combined
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     meta = {"merge_method": args.method, "merge_params": json.dumps(params),
