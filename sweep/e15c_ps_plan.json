@@ -1,0 +1,114 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 2,
+ "gpu_per_worker": [
+  1,
+  1
+ ],
+ "port_per_worker": [
+  8000,
+  8001
+ ],
+ "n_trials": 10,
+ "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_spatial_no_noops/norm_stats.json",
+ "jobs": [
+  {
+   "name": "e15c_jointPS_goalobj_goal",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_goal-object_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_goal_no_noops/norm_stats.json",
+   "suite": "libero_goal",
+   "eval_scenes": [
+    "open_the_middle_drawer_of_the_cabinet",
+    "put_the_bowl_on_the_stove",
+    "put_the_wine_bottle_on_top_of_the_cabinet",
+    "open_the_top_drawer_and_put_the_bowl_inside",
+    "put_the_bowl_on_top_of_the_cabinet",
+    "push_the_plate_to_the_front_of_the_stove",
+    "put_the_cream_cheese_in_the_bowl",
+    "turn_on_the_stove",
+    "put_the_bowl_on_the_plate",
+    "put_the_wine_bottle_on_the_rack"
+   ]
+  },
+  {
+   "name": "e15c_jointPS_goalobj_object",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_goal-object_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_object_no_noops/norm_stats.json",
+   "suite": "libero_object",
+   "eval_scenes": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+    "pick_up_the_ketchup_and_place_it_in_the_basket",
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+    "pick_up_the_butter_and_place_it_in_the_basket",
+    "pick_up_the_milk_and_place_it_in_the_basket",
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+    "pick_up_the_orange_juice_and_place_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e15c_mergedPS_goalobj_goal",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_goal_expert/10000/adapter_model.safetensors",
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_object_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_goal_no_noops/norm_stats.json",
+   "suite": "libero_goal",
+   "eval_scenes": [
+    "open_the_middle_drawer_of_the_cabinet",
+    "put_the_bowl_on_the_stove",
+    "put_the_wine_bottle_on_top_of_the_cabinet",
+    "open_the_top_drawer_and_put_the_bowl_inside",
+    "put_the_bowl_on_top_of_the_cabinet",
+    "push_the_plate_to_the_front_of_the_stove",
+    "put_the_cream_cheese_in_the_bowl",
+    "turn_on_the_stove",
+    "put_the_bowl_on_the_plate",
+    "put_the_wine_bottle_on_the_rack"
+   ]
+  },
+  {
+   "name": "e15c_mergedPS_goalobj_object",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_goal_expert/10000/adapter_model.safetensors",
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_object_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_object_no_noops/norm_stats.json",
+   "suite": "libero_object",
+   "eval_scenes": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+    "pick_up_the_ketchup_and_place_it_in_the_basket",
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+    "pick_up_the_butter_and_place_it_in_the_basket",
+    "pick_up_the_milk_and_place_it_in_the_basket",
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+    "pick_up_the_orange_juice_and_place_it_in_the_basket"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 4,
+ "gpu_per_worker": [
+  1,
+  2,
+  1,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "n_trials": 25,
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "jobs": [
+  {
+   "name": "e18b_t1_interchange",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t1_interchange_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE5_put_the_yellow_and_white_mug_on_the_right_plate"
+   ]
+  },
+  {
+   "name": "e18b_t1_residual",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t1_residual_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE5_put_the_yellow_and_white_mug_on_the_right_plate"
+   ]
+  },
+  {
+   "name": "e18b_t1_shared",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t1_shared_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE5_put_the_yellow_and_white_mug_on_the_right_plate"
+   ]
+  },
+  {
+   "name": "e18b_t6_interchange",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t6_interchange_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "name": "e18b_t6_residual",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t6_residual_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "name": "e18b_t6_shared",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/t6_shared_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf"
+   ]
+  }
+ ]
+}

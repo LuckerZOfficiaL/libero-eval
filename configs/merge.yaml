@@ -27,7 +27,7 @@ eval_tasks: auto            # 'auto' = the tasks being merged (in-distribution r
 # --- general run settings (apply to every eval in the run) ---
 trials: 10                  # rollouts per (pair, scene) eval
 workers: 4                  # parallel workers (2 = one server per P6000; use 4 for the full set)
-save_videos: 1            # rollout videos to keep per task:
+save_videos: 0            # rollout videos to keep per task:
                             #   all -> save every rollout (one file each)
                             #   0   -> save none (fastest; also skips frame capture)
                             #   k>0 -> keep the FIRST k rollouts, e.g. 3

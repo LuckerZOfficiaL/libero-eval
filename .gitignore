@@ -4,3 +4,8 @@ data/
 results/
 sweep/merge_plan.json
 sweep/plan_test.json
+
+# transient orchestrator plans written per-batch by the drivers
+sweep/_*_current.json
+# relocate.py backups
+*.bak

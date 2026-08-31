@@ -14,7 +14,7 @@ queued. Results append to results/merge/<job>.jsonl (one file per pair+method).
 
 Usage: python sweep/merge_orchestrator.py <plan.json>
 """
-import atexit, glob, json, os, queue, re, signal, socket, subprocess, sys, threading, time
+import atexit, glob, json, os, pathlib, queue, re, signal, socket, subprocess, sys, threading, time
 from pathlib import Path
 
 REPO = "/home/lzhou/libero-eval"
@@ -75,10 +75,14 @@ def port_open(port):
     with socket.socket() as s:
         s.settimeout(1); return s.connect_ex(("127.0.0.1", port)) == 0
 
+def job_adapters(job):
+    """Adapter files for a job: explicit paths (external adapters) or fleet indices."""
+    return list(job["adapter_paths"]) if job.get("adapter_paths") else [adapter_file(i) for i in job["adapters"]]
+
 def job_sig(job):
-    """Merge signature: jobs with identical (adapters, method, params) share one built model."""
+    """Merge signature: jobs with identical (adapters, method, params, norm) share one built model."""
     import hashlib
-    adapters = [adapter_file(i) for i in job["adapters"]]
+    adapters = job_adapters(job) + [job.get("norm_stats", "")]
     return hashlib.md5(json.dumps([adapters, job["method"], job.get("params", {})]).encode()).hexdigest()[:16]
 
 def build_merge(job, worker):
@@ -86,7 +90,7 @@ def build_merge(job, worker):
     # ONCE. A cached model is evicted when the last pending job that needs it finishes (refcount
     # in SIG_REMAINING), so heterogeneous plans don't accumulate models in tmpfs.
     sig = job_sig(job)
-    adapters = [adapter_file(i) for i in job["adapters"]]
+    adapters = job_adapters(job)
     out = f"{SHM}/cache/{sig}"
     if os.path.exists(f"{out}/model.safetensors"):
         log(worker, f"{job['name']}: reusing cached build {sig}")
@@ -96,7 +100,7 @@ def build_merge(job, worker):
     os.makedirs(tmp, exist_ok=True)
     cmd = [VENV_PY, "scripts/merge_loras.py", "--base-model-dir", BASE, "--adapters", *adapters,
            "--method", job["method"], "--params", json.dumps(job.get("params", {})),
-           "--output-dir", tmp, "--norm-stats", NORM]
+           "--output-dir", tmp, "--norm-stats", job.get("norm_stats", NORM)]
     r = subprocess.run(cmd, cwd=REPO, env=dict(os.environ, UV_CACHE_DIR=CACHE), capture_output=True, text=True)
     if r.returncode != 0:
         subprocess.run(["rm", "-rf", tmp], check=False)
@@ -117,13 +121,13 @@ def start_server(mergedir, gpu, port, worker):
         time.sleep(3)
     p.terminate(); raise RuntimeError("server did not listen in time")
 
-def run_eval(scene, gpu, port, worker, job_name):
+def run_eval(scene, gpu, port, worker, job_name, suite="libero_90"):
     env = dict(os.environ, MUJOCO_GL="egl", MUJOCO_EGL_DEVICE_ID=str(gpu), UV_CACHE_DIR=CACHE)
     vids = f"{VIDEOS_DIR}/{job_name}/{scene}"
     logf = f"{LOGDIR}/eval_w{worker}.log"
     with open(logf, "a") as lf:
         lf.write(f"\n===== job={job_name} scene={scene} =====\n"); lf.flush()
-        subprocess.run([VENV_PY, "examples/libero/main.py", "--args.task-suite-name", "libero_90",
+        subprocess.run([VENV_PY, "examples/libero/main.py", "--args.task-suite-name", suite,
                         "--args.task-name", scene, "--args.num-trials-per-task", str(NTRIALS),
                         f"--args.save-videos={SAVE_VIDEOS}",   # = form: safe for negative values (last-k)
                         "--args.port", str(port), "--args.video-out-path", vids],
@@ -148,14 +152,14 @@ def worker_fn(worker, job_q):
         server = None
         try:
             with heavy_sem:  # bound concurrent RAM-heavy builds
-                log(worker, f"{job['name']}: merging {job['adapters']} ({job['method']}) [{job_q.qsize()} queued]")
+                log(worker, f"{job['name']}: merging {job.get('adapters') or [pathlib.Path(a).parent.parent.name for a in job_adapters(job)]} ({job['method']}) [{job_q.qsize()} queued]")
                 md = build_merge(job, worker)
                 log(worker, f"{job['name']}: serving gpu={gpu} port={port}")
                 server = start_server(md, gpu, port, worker); servers[worker] = server
                 # NOTE: cached build dirs are kept (other jobs may share them); cleared in main at end.
             for scene in scenes:
                 t0 = time.time()
-                rate, neps = run_eval(scene, gpu, port, worker, job["name"])
+                rate, neps = run_eval(scene, gpu, port, worker, job["name"], job.get("suite", "libero_90"))
                 dt = round(time.time() - t0)
                 if server.poll() is not None:
                     log(worker, f"{job['name']}/{scene}: SERVER DIED")

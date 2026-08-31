@@ -1,0 +1,76 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 2,
+ "gpu_per_worker": [
+  1,
+  1
+ ],
+ "port_per_worker": [
+  8000,
+  8001
+ ],
+ "n_trials": 10,
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "jobs": [
+  {
+   "name": "e15probe_spatial_lib90",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_spatial_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+   "suite": "libero_spatial",
+   "eval_scenes": [
+    "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+   ]
+  },
+  {
+   "name": "e15probe_spatial_all",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_spatial_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero_all_norm_stats.json",
+   "suite": "libero_spatial",
+   "eval_scenes": [
+    "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+   ]
+  },
+  {
+   "name": "e15probe_spatial_combined",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_spatial_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero_combined_norm_stats.json",
+   "suite": "libero_spatial",
+   "eval_scenes": [
+    "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+   ]
+  },
+  {
+   "name": "e15probe_spatial_complete",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_spatial_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero_complete_norm_stats.json",
+   "suite": "libero_spatial",
+   "eval_scenes": [
+    "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+   ]
+  }
+ ]
+}

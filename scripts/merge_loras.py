@@ -91,7 +91,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Merge multiple LoRA adapters into one multi-task applied checkpoint.")
     ap.add_argument("--base-model-dir", required=True, type=Path, help="dir with model.safetensors, or the file itself")
     ap.add_argument("--adapters", required=True, nargs="+", type=Path, help="adapter .safetensors files to merge")
-    ap.add_argument("--method", default="task_arithmetic", choices=["average", "task_arithmetic", "ties"])
+    ap.add_argument("--method", default="task_arithmetic", choices=["average", "task_arithmetic", "ties", "weighted"])
     ap.add_argument("--params", default="{}", help='JSON method params, e.g. \'{"lambda":1.0}\'')
     ap.add_argument("--output-dir", required=True, type=Path)
     ap.add_argument("--norm-stats", type=Path, default=None, help="norm_stats.json to embed under assets/physical-intelligence/libero/")
@@ -142,15 +142,28 @@ def main() -> None:
     # average/task_arithmetic accumulate a running sum (only ONE delta alive besides the
     # accumulator — a k-delta list is multi-GB for big modules at large k); ties needs the
     # full per-module list, so it goes through combine() (fine at the small k it's used with).
+    weights = params.get("weights")
+    if args.method == "weighted":
+        if not weights or len(weights) != len(args.adapters):
+            raise ValueError(f"method=weighted needs params.weights with {len(args.adapters)} entries")
+        wsum = float(sum(weights))
+        weights = [float(w) / wsum for w in weights]   # normalize to a convex combination
+
     for base_key, lst in contributors.items():
-        if args.method in ("average", "task_arithmetic"):
+        if args.method in ("average", "task_arithmetic", "weighted"):
             acc = None
             for ai, stem in lst:
                 d = load_delta(ai, stem, merged[base_key])
+                if args.method == "weighted":
+                    d = d.mul_(weights[ai])
                 acc = d if acc is None else acc.add_(d)
                 del d
-            combined = acc.div_(len(lst)) if args.method == "average" \
-                else acc.mul_(float(params.get("lambda", 1.0)))
+            if args.method == "average":
+                combined = acc.div_(len(lst))
+            elif args.method == "task_arithmetic":
+                combined = acc.mul_(float(params.get("lambda", 1.0)))
+            else:                                      # weighted: acc already Σ wᵢ·ΔWᵢ
+                combined = acc
             del acc
         else:
             deltas = [load_delta(ai, stem, merged[base_key]) for ai, stem in lst]

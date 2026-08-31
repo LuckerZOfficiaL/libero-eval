@@ -1,0 +1,118 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 4,
+ "gpu_per_worker": [
+  1,
+  2,
+  1,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "n_trials": 10,
+ "norm_stats": "/media/pinas/Chris/assets/siamaky1984/libero_spatial_no_noops/norm_stats.json",
+ "jobs": [
+  {
+   "name": "e16_joint_object_10_libero_object",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_10_object/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/dragdrop-vlas/pi05_libero_lora/Fascetta/libero_object_10/norm_stats.json",
+   "suite": "libero_object",
+   "eval_scenes": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+    "pick_up_the_ketchup_and_place_it_in_the_basket",
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+    "pick_up_the_butter_and_place_it_in_the_basket",
+    "pick_up_the_milk_and_place_it_in_the_basket",
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+    "pick_up_the_orange_juice_and_place_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e16_merged_object_10_libero_object",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_object_expert/10000/adapter_model.safetensors",
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_10_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/dragdrop-vlas/pi05_libero_lora/Fascetta/libero_object_10/norm_stats.json",
+   "suite": "libero_object",
+   "eval_scenes": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+    "pick_up_the_ketchup_and_place_it_in_the_basket",
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+    "pick_up_the_butter_and_place_it_in_the_basket",
+    "pick_up_the_milk_and_place_it_in_the_basket",
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+    "pick_up_the_orange_juice_and_place_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e16_joint_object_10_libero_10",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_10_object/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/dragdrop-vlas/pi05_libero_lora/Fascetta/libero_object_10/norm_stats.json",
+   "suite": "libero_10",
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+    "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+    "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+    "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+    "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+    "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+    "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+    "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+    "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it"
+   ]
+  },
+  {
+   "name": "e16_merged_object_10_libero_10",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_object_expert/10000/adapter_model.safetensors",
+    "/media/pinas/Chris/pi05_libero_lora_experts/pi05_libero_10_expert/10000/adapter_model.safetensors"
+   ],
+   "norm_stats": "/media/pinas/Chris/dragdrop-vlas/pi05_libero_lora/Fascetta/libero_object_10/norm_stats.json",
+   "suite": "libero_10",
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+    "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+    "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+    "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+    "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+    "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+    "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+    "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+    "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it"
+   ]
+  }
+ ]
+}

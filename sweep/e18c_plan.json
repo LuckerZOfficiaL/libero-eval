@@ -1,0 +1,64 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 4,
+ "gpu_per_worker": [
+  1,
+  2,
+  1,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "n_trials": 25,
+ "jobs": [
+  {
+   "name": "e18c_struct_24_69",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/structured_24_69_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_back_in_the_top_drawer_of_the_cabinet_and_close_it",
+    "KITCHEN_SCENE10_put_the_butter_at_the_front_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "name": "e18c_struct_5_33",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/structured_5_33_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it",
+    "LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e18c_struct_12_13_14",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/structured_12_13_14_k16.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet",
+    "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle",
+    "KITCHEN_SCENE9_put_the_frying_pan_on_top_of_the_cabinet"
+   ]
+  }
+ ]
+}

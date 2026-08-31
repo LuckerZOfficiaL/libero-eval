@@ -1,0 +1,120 @@
+{
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "videos_dir": "/home/lzhou/libero-eval/results/merge_videos",
+ "logdir": "/home/lzhou/libero-eval/results/merge_logs",
+ "save_videos": "1",
+ "results_dir": "/home/lzhou/libero-eval/results/merge",
+ "n_workers": 4,
+ "gpu_per_worker": [
+  1,
+  2,
+  1,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "n_trials": 25,
+ "jobs": [
+  {
+   "name": "e18e_sh_twin_t24",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_sh_twin_t24.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_back_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "name": "e18e_re_twin_t24",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_re_twin_t24.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_back_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "name": "e18e_sh_twin_t69",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_sh_twin_t69.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_front_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "name": "e18e_re_twin_t69",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_re_twin_t69.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_front_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "name": "e18e_sh_dissim_t5",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_sh_dissim_t5.safetensors"
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e18e_re_dissim_t5",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_re_dissim_t5.safetensors"
+   ],
+   "eval_scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "name": "e18e_sh_dissim_t33",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_sh_dissim_t33.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it"
+   ]
+  },
+  {
+   "name": "e18e_re_dissim_t33",
+   "method": "average",
+   "params": {},
+   "adapters": [],
+   "adapter_paths": [
+    "/home/lzhou/libero-eval/results/analysis/decomp_adapters/m22_re_dissim_t33.safetensors"
+   ],
+   "eval_scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it"
+   ]
+  }
+ ]
+}
