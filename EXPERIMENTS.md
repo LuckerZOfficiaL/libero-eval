@@ -1690,3 +1690,63 @@ Same 10 weak targets / 8 candidates as Phase 2, probed @5 (40 r/scene vs 80).
 - **Probe-budget curve now complete** (weak-target gain): 3 -> +5.6 | **5 -> +6.8** | **10 -> +10.5** |
   25 -> +9.4. A clean interior optimum at 10 rollouts / 80 per scene, bracketed by measurement on both
   sides. Figure `results/analysis/fig_probe_budget.png`; report `results/analysis/probe5_report.txt`.
+
+### EXP-30 — Hypernetwork v1: LoRA2Coef trained by REINFORCE on real rollouts — **DROPPED (donor-independent)**
+Motivation: reverse the DnD hypernetwork — two LoRAs in (target, donor), merging coefficient out — and
+train it on the real objective (rollout success of the merged policy) instead of proxy labels.
+- Setup: raw B/A factors of all 458 modules, JL-projected to (128 modules x 32 x 64) tokens; HyperConv
+  contracting encoder -> 128-d embeddings; asymmetric head [e_T, e_p, e_T-e_p, e_T*e_p] -> c in [0.10, 1.20],
+  warm start exactly 0.5. REINFORCE: reward = success(merged) - success(target), antithetic pairs, per-target
+  baseline, advantage standardisation. 66 train / 10 held-out targets (5 weak + 5 strong). 640 rollouts/step.
+- Iterations: (1) random donors -> constant 0.385 (reward landscape flat) -> stratified donors + spread
+  diagnostic. (2) c -> 0.000 saturation: c=0 scores exactly 0 with zero variance, a genuine optimum for a
+  non-discriminating learner -> bounded sigmoid output, lr 3e-3 -> 5e-4, prior to 0.5. (3) coefficient
+  drifted 0.50 -> 0.33 over 7 steps while "spread" grew 0.0002 -> 0.027.
+- **Decisive diagnostic (step 7, ~4,500 rollouts): coefficient for a held-out target's known-GOOD donors
+  0.3145, known-BAD donors 0.3145 — identical to 4 decimals.** The spread was variation across TARGETS,
+  not donors. Same "do not merge" attractor as iterations 1-2, bounded and slower. Stopped.
+- The encoder is NOT the problem: identical adapters (t7/t18) -> embedding distance 0.000000; distinct
+  (t6/t19) -> 0.181. The head cannot learn a donor-dependent map from this reward signal.
+⇒ Confounded with EXP-34 unless representation and training signal are separated — hence EXP-34.
+
+### EXP-34 — Raw weights vs hand features, SAME labels and objective — **raw weights are WORSE**
+Motivation: v1 changed two things at once vs the feature hypernetwork (representation AND training
+signal). Isolate representation: same 634 rollout labels, same binary objective, same leave-out-10 protocol.
+- **Raw weights (HyperConv encoder): +0.46pp over random (SE 0.37, p=0.245); hand features: +1.31pp
+  (p=0.0065).** Per-seed raw: 0.86, 0.68, 1.75, 1.49, 0.15, 0.58, -0.31, -1.50 — a larger model
+  overfitting 634 labels, not extracting more signal.
+⇒ **Representation was never the bottleneck, and REINFORCE's failure was not the reward signal either.**
+Fourth independent route (hand features; donor history; action-error proxy; raw weights under supervised
+AND RL) to the same conclusion: the (target, donor) interaction is not recoverable from 76 adapters.
+The only lever the learning curve endorses (~140 tasks, 0.018pp/task) is more tasks -> EXP-36.
+
+### EXP-33 — Layerwise dosing probe: does WHERE the donor lands matter? (5 fixed patterns) — done
+Motivation: before REINFORCE on a 5-d layerwise coefficient (v2), ask whether ANY non-uniform pattern
+beats uniform. Bands vision / llm-early / llm-late / expert / action; every pattern rescaled to the
+uniform alpha=0.5 injected Frobenius norm. 5 targets x top-1 donor x 25 rollouts.
+- n=5: uniform +10.4, front +10.4, **back +18.4**, expert_only +12.0, vision_only +1.6pp.
+  back vs uniform **+8.0pp (SE 6.1, p=0.258)**. Read as a go signal for a fixed back-weighted pattern.
+⇒ Validated at fleet scale in EXP-35 — where it did not hold. Pilot was best-of-5 patterns on 5 targets.
+
+### EXP-35 — Back-weighted dosing on ALL 76 targets, paired vs uniform — **NO: uniform stays**
+Motivation: if a fixed back-weighted pattern beats uniform, the operator improves for free (no learning,
+no extra rollouts). Strictly paired: same targets, same e27 top-3 donors, same 25-rollout commit, same
+injected energy per donor (verified, e.g. 4.58 vs 4.58); only the band distribution differs.
+- **n=76: uniform +2.22pp, back +1.54pp; paired diff -0.68pp (SE 0.47, p=0.157); back better on 12/76.**
+  WEAK n=15: uniform +9.78, back +9.51 (diff -0.27). STRONG n=61: +0.36 vs -0.42 (diff -0.78).
+- The pilot's +8pp (n=5) was selection inflation: the best of 5 patterns on 5 targets with ~10pp
+  per-cell noise. Third time this week a small-n maximum evaporated at full N.
+⇒ **Uniform alpha=0.5 is optimal along the layer axis too.** A layerwise hypernetwork output (v2) has
+nothing to find; that branch is closed. The operator is unchanged.
+
+### EXP-36 — Enlarge the fleet: train new LoRA experts (76 -> ~106) — **running (stage 1 passed 2/3 gates)**
+Motivation: every learned-selector route fails at 76 tasks and the learning curve says ~140. The only
+axis that moves it is more real tasks. Material on the NAS: libero_goal / object / spatial demos, 10 each.
+- Trainer `sweep/train_lora.py`: the fleet's exact recipe (r=16, alpha=16, dropout 0, gaussian init, the
+  17 target modules from the fleet's adapter_config.json), the model's own flow-matching forward as the
+  loss, LoRA params only, byte-identical norm stats to the fleet's (md5 match), same base model.
+- Stage 1, ONE adapter (put_the_bowl_on_the_stove, 2,297 samples, 1,500 steps, batch 8, 46.1M trainable):
+  (a) trains: loss 0.0755 -> 0.011 — PASS. (b) structure: 458 stems, identical stem set and shapes to the
+  fleet, rank 16 — PASS. Delta norm 34.8 vs 59.9 for a fleet adapter (1,500 steps undertrains vs the
+  fleet's ~10k; batch run should train longer). (c) 25-rollout test on its own task, with a fleet
+  adapter never trained on that task as the control — running (e47_*).
