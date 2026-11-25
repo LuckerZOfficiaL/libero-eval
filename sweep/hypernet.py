@@ -37,8 +37,11 @@ torch.set_num_threads(4)
 
 
 # ---------------------------------------------------------------- data
-def load(labels_file=None):
-    z = np.load(REPO / "results/analysis/hypernet_feats.npz")
+def load(labels_file=None, feats="results/analysis/hypernet_feats.npz", baselines=None):
+    """feats: the feature npz (76-target default, or hypernet_feats106.npz). baselines: optional json
+    {task_index: success} covering every target in the labels — required once targets >= 76 exist,
+    since those are not in baseline_results.jsonl."""
+    z = np.load(REPO / feats)
     F = torch.tensor(z["F"], dtype=torch.float32)
     if labels_file:
         # consolidated labels: every pairwise measurement we own, repeats averaged (see
@@ -68,6 +71,16 @@ def load(labels_file=None):
         def b(t):
             ss = [s for s in scenes[t] if s in base]
             return sum(base[s] for s in ss) / len(ss)
+        if baselines:
+            B = {int(k): v for k, v in json.load(open(REPO / baselines)).items()}
+            # F rows follow z["tasks"]; remap group target/candidate ids to row positions if needed
+            tasks = [int(x) for x in z["tasks"]]
+            if tasks != list(range(len(tasks))):
+                pos = {t: i for i, t in enumerate(tasks)}
+                groups = [(pos[t], [pos[c] for c in cand], aff, lw) for t, cand, aff, lw in groups
+                          if t in pos and all(c in pos for c in cand)]
+                B = {pos[t]: v for t, v in B.items() if t in pos}
+            return F, groups, B
         return F, groups, {t: b(t) for t in range(76)}
     R = json.loads(open(REPO / "results/analysis/probe_selector76_report.txt")
                    .read().split("probe rankings: ")[1].strip())
@@ -97,13 +110,21 @@ def load(labels_file=None):
     return F, groups, {t: b(t) for t in range(76)}
 
 
-def split(groups, baseline, n_weak=5, n_strong=5, seed=0):
-    """Hold out whole TARGETS (their candidate lists are never seen), stratified weak/strong."""
+def split(groups, baseline, n_weak=5, n_strong=5, seed=0, mode="random", n_fleet=76, holdout_max=106):
+    """Hold out whole TARGETS (their candidate lists are never seen).
+    mode: random  = 5 weak + 5 strong drawn from ALL targets (the 76-target protocol)
+          fleet   = same draw but only from fleet targets (< n_fleet); new targets always train
+          new     = hold out EVERY new target (>= n_fleet): train on the fleet, test cross-distribution"""
     rng = np.random.default_rng(seed)
-    weak = [g[0] for g in groups if baseline[g[0]] < 0.90]
-    strong = [g[0] for g in groups if baseline[g[0]] >= 0.90]
-    ho = set(rng.choice(weak, n_weak, replace=False).tolist()
-             + rng.choice(strong, n_strong, replace=False).tolist())
+    # targets >= holdout_max are manufactured seed VARIANTS: they may train, never be held out
+    if mode == "new":
+        ho = {g[0] for g in groups if n_fleet <= g[0] < holdout_max}
+    else:
+        pool = [g for g in groups if (mode == "random" and g[0] < holdout_max) or g[0] < n_fleet]
+        weak = [g[0] for g in pool if baseline[g[0]] < 0.90]
+        strong = [g[0] for g in pool if baseline[g[0]] >= 0.90]
+        ho = set(rng.choice(weak, min(n_weak, len(weak)), replace=False).tolist()
+                 + rng.choice(strong, min(n_strong, len(strong)), replace=False).tolist())
     return [g for g in groups if g[0] not in ho], [g for g in groups if g[0] in ho], sorted(ho)
 
 
@@ -203,10 +224,13 @@ def main():
     ap.add_argument("--tag", default="base")
     ap.add_argument("--labels", default=None, help="consolidated pair_labels.json (default: e27 only)")
     ap.add_argument("--objective", default="listwise", choices=["listwise", "binary"])
+    ap.add_argument("--feats", default="results/analysis/hypernet_feats.npz")
+    ap.add_argument("--baselines", default=None, help="json {task_index: success}; needed for 106 targets")
+    ap.add_argument("--holdout", default="random", choices=["random", "fleet", "new"])
     a = ap.parse_args()
 
-    F, groups, baseline = load(a.labels)
-    sl = json.loads(str(np.load(REPO / "results/analysis/hypernet_feats.npz")["slices"]))
+    F, groups, baseline = load(a.labels, feats=a.feats, baselines=a.baselines)
+    sl = json.loads(str(np.load(REPO / a.feats)["slices"]))
     keep = np.concatenate([np.arange(*sl[b]) for b in a.blocks])
     F = F[:, keep]
     print(f"features {tuple(F.shape)} (blocks {a.blocks})   groups {len(groups)}   "
@@ -214,7 +238,7 @@ def main():
 
     rows = []
     for seed in range(a.seeds):
-        tr, te, ho = split(groups, baseline, seed=seed)
+        tr, te, ho = split(groups, baseline, seed=seed, mode=a.holdout)
         if a.n_train and a.n_train < len(tr):
             sel = np.random.default_rng(1000 + seed).choice(len(tr), a.n_train, replace=False)
             tr = [tr[i] for i in sel]
@@ -226,6 +250,7 @@ def main():
                 sub.append((T, [c[i] for i in ix], af[ix], lw[ix]))
             tr = sub
         torch.manual_seed(seed)
+        np.random.seed(seed)   # the epoch order below was unseeded: identical runs differed by up to 1.2pp
         net = AffinityNet(F.shape[1], d_emb=a.d_emb, p_drop=a.drop)
         opt = torch.optim.AdamW(net.parameters(), lr=a.lr, weight_decay=a.wd)
         curve = []

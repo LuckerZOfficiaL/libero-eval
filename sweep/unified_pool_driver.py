@@ -31,6 +31,7 @@ describe it. Using capture to pick the form makes the rule mechanical and testab
 Fleet-target/fleet-donor probes already exist under this form (e27, 604 of them) and are reused.
 """
 import glob
+import os
 import json
 import pathlib
 import subprocess
@@ -77,7 +78,9 @@ for _p in glob.glob("/media/pinas/Chris/pi05_libero_lora_experts/*/*/assets/*/*/
 # 0% earlier. They remain DONORS (donors need no evaluation); promoting them to targets requires
 # knowing which suite each was actually trained for.
 EXT_SUITE = {"pi05_libero_goal_expert": "libero_goal"}
-CHUNK = max(6, 2 * META["n_workers"])
+# 09-16: builds are ~1.66GB now (S16 form concatenates target + donors + basis), not the 0.55GB this
+# was tuned for, so a CHUNK=6 run peaked at ~10GB and blew the quota mid-run. Overridable per run.
+CHUNK = int(os.environ.get("CHUNK", max(6, 2 * META["n_workers"])))
 E27 = json.loads(open(REPO / "results/analysis/probe_selector76_report.txt")
                  .read().split("probe rankings: ")[1].strip())
 _cache = {}
@@ -95,7 +98,9 @@ def _clear_orphaned_builds():
             _f.unlink(missing_ok=True)
 
 
-_clear_orphaned_builds()
+# NOTE: not called at import time. A chunked driver builds its adapters BEFORE its orchestrator
+# starts, so an import from an analysis script in that window deleted two live probe files
+# (EXP-32, 09-04 21:48). Drivers call it from main() only.
 
 def fold(key):
     """key: int -> fleet adapter; str -> external expert name."""
@@ -146,6 +151,70 @@ def resid_norm(key):
     return tot ** 0.5
 
 
+def _ensure_space(need_gb=None):
+    """Make room before writing a merged adapter, or say clearly that there is none.
+
+    Each build is ~1.66GB (measured 09-16) and drivers build a chunk (up to 14) before evaluating any of them, so a run
+    can need ~10GB at once; set CHUNK smaller when the quota is tight. Three separate runs have died mid-chunk on "Disk quota exceeded" (EXP-36,
+    EXP-44, EXP-51), each time losing the rest of the stage. This reclaims obvious orphans first --
+    adapters in decomp_adapters older than 30 minutes cannot belong to the chunk being built now -- and
+    only then gives up, with the numbers in the message.
+    """
+    import shutil, time
+    # 09-16: the old default was a flat 9.0GB, tuned for neither the current build size nor CHUNK.
+    # This runs before EVERY save, and the earlier builds of the same chunk are legitimately on disk
+    # by then -- demanding a whole chunk here asks for ~2x the chunk and fails on its last build
+    # (that is exactly how EXP-81 died at 22:03). Require room for THIS build plus one spare.
+    if need_gb is None:
+        need_gb = 1.7 + 0.3      # this build plus slack; the disk is too tight for a whole-chunk reserve
+    d = REPO / "results/analysis/decomp_adapters"
+    free = shutil.disk_usage(d).free / 1e9
+    try:                                            # user quota, if one applies, is the real limit
+        out = subprocess.run(["quota", "-s"], capture_output=True, text=True).stdout.split("\n")
+        for ln in out:
+            f = ln.split()
+            if len(f) >= 3 and f[0].startswith("/dev/"):
+                used, limit = (float(x.rstrip("*M")) for x in f[1:3])
+                free = min(free, (limit - used) / 1024.0)
+    except Exception:
+        pass
+    if free >= need_gb:
+        return free
+    now = time.time()
+    freed = 0.0
+    for f in sorted(d.glob("*.safetensors"), key=lambda x: x.stat().st_mtime):
+        if now - f.stat().st_mtime > 1800:
+            freed += f.stat().st_size / 1e9
+            f.unlink(missing_ok=True)
+    if freed:
+        print(f"[space] reclaimed {freed:.1f}GB of stale build artifacts", flush=True)
+    free += freed
+    # 09-16: odin's /dev/sda2 is SHARED and sits ~100% full, so free space fluctuates by a GB or two as
+    # other users write. A transient shortage killed a 160-cell run at cell 40. Wait for space rather than
+    # dying: re-measure every 60s for up to 30 min, then give up with the real numbers.
+    waited = 0
+    while free < need_gb and waited < 1800:
+        if waited == 0:
+            print(f"[space] {free:.1f}GB free, need {need_gb:.1f}GB -- waiting for the shared disk", flush=True)
+        time.sleep(60); waited += 60
+        free = shutil.disk_usage(d).free / 1e9
+        try:
+            out = subprocess.run(["quota", "-s"], capture_output=True, text=True).stdout.split("\n")
+            for ln in out:
+                f_ = ln.split()
+                if len(f_) >= 4 and f_[0].startswith("/dev/"):
+                    used = float(f_[1].rstrip("M*")); limit = float(f_[2].rstrip("M*"))
+                    free = min(free, (limit - used) / 1024.0)
+        except Exception:
+            pass
+    if free < need_gb:
+        raise RuntimeError(f"only {free:.1f}GB free, need ~{need_gb:.1f}GB after waiting {waited//60} min; "
+                           f"the filesystem (not the quota) is the limit -- check `df -h`")
+    if waited:
+        print(f"[space] got {free:.1f}GB after waiting {waited//60} min", flush=True)
+    return free
+
+
 def build(name, tgt, donors):
     """donors: [(key, coeff)]. Operator form chosen by the target's capture@16."""
     keep_intact = capture(tgt) < CAPTURE_GATE
@@ -179,6 +248,7 @@ def build(name, tgt, donors):
         tensors[f"{stem}.lora_A.weight"] = torch.cat(Ab, 0).contiguous()
         tensors[f"{stem}.lora_B.weight"] = torch.cat(Bb, 1).contiguous()
     p_ = REPO / f"results/analysis/decomp_adapters/{name}.safetensors"
+    _ensure_space(1.5)
     st.save_file(tensors, str(p_))
     return str(p_)
 
@@ -227,6 +297,7 @@ def targets():
 
 
 def main():
+    _clear_orphaned_builds()
     rng = np.random.default_rng(2026)
     ref = 0.5 * float(np.mean([resid_norm(t) for t in range(0, 76, 8)]))
     ext_names = sorted(EXTPATH)
@@ -252,8 +323,18 @@ def main():
         if isinstance(tk, int) and str(tk) in E27:
             fleet_c = [p for p, _ in E27[str(tk)][:N_FLEET_CAND]]
         else:
-            fleet_c = [int(x) for x in rng.choice([c for c in range(76) if c != tk], N_FLEET_CAND,
-                                                  replace=False)]
+            # TRAP (09-14): this used to draw from ONE rng advanced per target, so a target that was
+            # skipped (no baseline) shifted every later target's candidate set -- fixing goal_expert_4's
+            # baseline silently re-drew targets 5-9 and re-probed 36 pairs. Candidate sets are now FROZEN
+            # to whatever was probed first; a target with no probes yet gets a per-target seeded draw.
+            import hashlib as _hl
+            done_c = sorted({int(f.name.split("_")[-1][:-6]) for f in (REPO / "results/merge").glob(f"e44_p_{tag}_*.jsonl")
+                             if f.name.split("_")[-1][:-6].isdigit()})
+            if len(done_c) >= N_FLEET_CAND:
+                fleet_c = done_c[:N_FLEET_CAND]
+            else:
+                _r = np.random.default_rng(int(_hl.md5(f"{tag}_e44".encode()).hexdigest()[:8], 16))
+                fleet_c = [int(x) for x in _r.choice([c for c in range(76) if c != tk], N_FLEET_CAND, replace=False)]
         cands = [(c, "int") for c in fleet_c] + [(nm, "ext") for nm in ext_names if nm != tk]
         specs = [(f"e44_p_{tag}_{c if isinstance(c,int) else c[11:]}", c) for c, _ in cands]
         specs = [(j, c) for (j, c) in specs if get(j, task) is None]
@@ -303,7 +384,9 @@ def report(tgts):
         kind = "fleet" if isinstance(tk, int) else "external"
         rows.append((tag, kind, b, eff, (eff - b) * 100, c is not None))
     L = ["=== EXP-32: UNIFIED 84-LoRA POOL — every eligible adapter a target in turn ===",
-         "84 donors (76 fleet + 8 external); 81 target-capable; candidates = 8 fleet + 8 external",
+         "84 donors (76 fleet + 8 external); 77 target-capable (76 fleet + goal_expert -- the other 7\n"
+         "externals were trained on suite UNIONS, so which suite to score them on is a guess; they stay donors);\n"
+         "candidates = 8 fleet + 8 external",
          "operator form chosen by capture@16 (>=0.6 S16 form, <0.6 keep-intact)", ""]
     if rows:
         d = np.array([r[4] for r in rows]); b = np.array([r[2] for r in rows])

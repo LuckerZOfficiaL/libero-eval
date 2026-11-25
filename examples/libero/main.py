@@ -48,6 +48,7 @@ class Args:
     # Utils
     #################################################################################################################
     video_out_path: str = "data/libero/videos"  # Path to save videos
+    dump_obs_path: str | None = None  # if set: per episode, save both camera frames + state at every replan (npz)
 
     seed: int = 7  # Random Seed (for reproducibility)
 
@@ -128,6 +129,7 @@ def eval_libero(args: Args) -> None:
             # Setup
             t = 0
             replay_images = []
+            dump = {"img": [], "wrist": [], "state": [], "step": []}
             # Record this episode's video? "first k" saves only episodes 0..k-1; "last k" always
             # records (rolling); "all" always; "none" never. Skips frame capture when not recording.
             record_video = (vid_mode == "all") or (vid_mode == "last") or (vid_mode == "first" and episode_idx < vid_k)
@@ -173,6 +175,9 @@ def eval_libero(args: Args) -> None:
                             "prompt": str(task_description),
                         }
 
+                        if args.dump_obs_path:
+                            dump["img"].append(img); dump["wrist"].append(wrist_img)
+                            dump["state"].append(element["observation/state"]); dump["step"].append(t)
                         # Query model to get action
                         action_chunk = client.infer(element)["actions"]
                         assert (
@@ -197,6 +202,10 @@ def eval_libero(args: Args) -> None:
             task_episodes += 1
             total_episodes += 1
 
+            if args.dump_obs_path and dump["img"]:
+                dd = pathlib.Path(args.dump_obs_path); dd.mkdir(parents=True, exist_ok=True)
+                np.savez_compressed(dd / f"ep{episode_idx:03d}_{'success' if done else 'failure'}.npz",
+                                    **{k: np.asarray(v) for k, v in dump.items()}, done=np.array(bool(done)), final_t=np.array(t))
             # Save this episode's replay video per the save_videos policy (see top of eval_libero).
             # slot: rolling (episode_idx % |k|) for "last k" so only the last |k| survive; otherwise
             # unique per episode ("all" and "first k" write each once and never overwrite).

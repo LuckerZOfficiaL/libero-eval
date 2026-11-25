@@ -61,20 +61,27 @@ def main():
     ap.add_argument("--tasks", default="")
     ap.add_argument("--merges", default="")
     ap.add_argument("--device", default="cuda:0")
+    ap.add_argument("--plan", default="sweep/plan.json",
+                    help="adapter plan; use plan106.json to include the S16-init experts (76-105)")
+    ap.add_argument("--bank", default="results/analysis/obs_bank.npz", help="observation bank npz")
+    ap.add_argument("--base", default="", help="EXP-82: run the BASE policy (no adapter) once, save under this name")
+    ap.add_argument("--outdir", default="results/analysis/act_sigs")
     args = ap.parse_args()
 
-    plan = json.load(open(REPO / "sweep/plan.json"))["adapters"]
+    plan = json.load(open(REPO / args.plan))["adapters"]
     afile = {a["task_index"]: a["adapter_file"] for a in plan}
     specs = []
     if args.tasks:
-        ts = range(76) if args.tasks == "all" else [int(x) for x in args.tasks.split(",")]
+        ts = sorted(afile) if args.tasks == "all" else [int(x) for x in args.tasks.split(",")]
         specs += [(f"task{t}", [t]) for t in ts]
+    if args.base:
+        specs += [(args.base, [])]
     if args.merges:
         for g in args.merges.split(","):
             grp = [int(x) for x in g.split(":")]
             specs += [("merge_" + "_".join(map(str, grp)), grp)]
 
-    bank = np.load(REPO / "results/analysis/obs_bank.npz")
+    bank = np.load(REPO / args.bank, allow_pickle=True)
     n_obs = len(bank["state"])
     rng = np.random.default_rng(42)
     noise = rng.standard_normal((10, 32)).astype(np.float32)
@@ -126,6 +133,8 @@ def main():
         handles.append(mod.register_forward_hook(mk(tag)))
 
     def apply_group(grp):
+        if not grp:
+            return                                   # --base: pristine weights, nothing to add
         groups = {t: al.extract_lora_groups(st.load_file(afile[t])) for t in grp}
         with torch.no_grad():
             for s_ in stems:
@@ -144,7 +153,7 @@ def main():
             for k, v in pristine.items():
                 params[k].copy_(v.to(params[k].device))
 
-    outdir = REPO / "results/analysis/act_sigs"
+    outdir = REPO / args.outdir
     outdir.mkdir(parents=True, exist_ok=True)
     import time
     for name, grp in specs:

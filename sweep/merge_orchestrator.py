@@ -25,7 +25,16 @@ JOBS = plan["jobs"]
 BASE, NORM, NTRIALS, NW = plan["base_model"], plan["norm_stats"], plan["n_trials"], plan["n_workers"]
 SAVE_VIDEOS = str(plan.get("save_videos", "all"))   # 'all' | '0'/'none' | k (last k) — passed to main.py
 GPUS, PORTS = plan["gpu_per_worker"], plan["port_per_worker"]
+# 10-21 (shiva GPU 1 failed): optional maps from the plan's GPU index to the CUDA device (e.g. a UUID) and to the EGL device
+# used by the simulator; "0=GPU-...,2=GPU-...". Unset -> previous behaviour (the index for both).
+_MAP = lambda var: dict(kv.split("=", 1) for kv in os.environ.get(var, "").split(",") if "=" in kv)
+CUDA_MAP, EGL_MAP = _MAP("ORCH_CUDA_MAP"), _MAP("ORCH_EGL_MAP")
 RESULTS_DIR = plan.get("results_dir", f"{REPO}/results/merge")   # one file per job: <job>.jsonl
+# Which evaluation entry point to run. Default is the live one; plans may point at the instrumented
+# copy (main_dense.py) to also record per-episode PROGRESS and SUCCESS_STEP. Kept as a plan key so an
+# instrumented run cannot disturb a concurrent standard one.
+EXTRA = {}                                    # (job, scene) -> per-episode PROGRESS / SUCCESS_STEP
+EVAL_SCRIPT = plan.get("eval_script", "examples/libero/main.py")
 VIDEOS_DIR = plan.get("videos_dir", f"{REPO}/results/merge_videos")
 LOGDIR = plan.get("logdir", f"{REPO}/results/merge_logs")
 VENV_PY = f"{REPO}/.venv/bin/python"
@@ -51,11 +60,18 @@ for rf in glob.glob(f"{RESULTS_DIR}/*.jsonl"):
 results_lock = threading.Lock()
 def record(rec):
     rec["ts"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    # per-episode PROGRESS / SUCCESS_STEP, present only when the plan selected the instrumented
+    # eval script; harmless (and absent) for every standard run.
+    ex = EXTRA.pop((rec.get("job"), rec.get("scene")), None)
+    if ex:
+        rec.update(ex)
     with results_lock:
         with open(f"{RESULTS_DIR}/{rec['job']}.jsonl", "a") as f:
             f.write(json.dumps(rec) + "\n")
 
-heavy_sem = threading.BoundedSemaphore(1)   # serialize merge builds (each ~21 GB RAM); evals not capped
+# serialize merge builds + server start (each build ~21 GB RAM); evals not capped. The whole block takes ~65 s,
+# which caps a 7-worker host at ~55 job starts/hour on short evals -> plan key "heavy_parallel" (default 1)
+heavy_sem = threading.BoundedSemaphore(int(plan.get("heavy_parallel", 1)))
 servers = {}
 _plock = threading.Lock()
 def log(w, m):
@@ -85,11 +101,27 @@ def job_sig(job):
     adapters = job_adapters(job) + [job.get("norm_stats", "")]
     return hashlib.md5(json.dumps([adapters, job["method"], job.get("params", {})]).encode()).hexdigest()[:16]
 
+_SIG_LOCKS, _SIG_GUARD = {}, threading.Lock()
+def _sig_lock(sig):
+    # 10-07: two workers with the same merge signature raced (the second rm -rf'd the first's in-progress build:
+    # 'Directory not empty' errors in EXP-108/109). One lock per signature: the second waits, then reuses.
+    with _SIG_GUARD:
+        return _SIG_LOCKS.setdefault(sig, threading.Lock())
+
 def build_merge(job, worker):
+    # EXP-101: a job may point at a checkpoint the driver already wrote (dense merges that are not low-rank
+    # adapters); serve it as-is. The driver owns and deletes it.
+    if job.get("prebuilt_dir"):
+        log(worker, f"{job['name']}: serving prebuilt {job['prebuilt_dir']}")
+        return job["prebuilt_dir"]
     # Cache by merge signature — e.g. several probe jobs splitting one soup's eval scenes build
     # ONCE. A cached model is evicted when the last pending job that needs it finishes (refcount
     # in SIG_REMAINING), so heterogeneous plans don't accumulate models in tmpfs.
     sig = job_sig(job)
+    with _sig_lock(sig):
+        return _build_locked(job, worker, sig)
+
+def _build_locked(job, worker, sig):
     adapters = job_adapters(job)
     out = f"{SHM}/cache/{sig}"
     if os.path.exists(f"{out}/model.safetensors"):
@@ -109,7 +141,7 @@ def build_merge(job, worker):
     return out
 
 def start_server(mergedir, gpu, port, worker):
-    env = dict(os.environ, CUDA_DEVICE_ORDER="PCI_BUS_ID", CUDA_VISIBLE_DEVICES=str(gpu),
+    env = dict(os.environ, CUDA_DEVICE_ORDER="PCI_BUS_ID", CUDA_VISIBLE_DEVICES=CUDA_MAP.get(str(gpu), str(gpu)),
                TORCHDYNAMO_DISABLE="1", UV_CACHE_DIR=CACHE)
     logf = open(f"{LOGDIR}/server_w{worker}.log", "a")
     p = subprocess.Popen([VENV_PY, "scripts/serve_policy.py", "--port", str(port),
@@ -122,12 +154,22 @@ def start_server(mergedir, gpu, port, worker):
     p.terminate(); raise RuntimeError("server did not listen in time")
 
 def run_eval(scene, gpu, port, worker, job_name, suite="libero_90"):
-    env = dict(os.environ, MUJOCO_GL="egl", MUJOCO_EGL_DEVICE_ID=str(gpu), UV_CACHE_DIR=CACHE)
+    env = dict(os.environ, MUJOCO_GL="egl", MUJOCO_EGL_DEVICE_ID=EGL_MAP.get(str(gpu), str(gpu)), UV_CACHE_DIR=CACHE)
+    if EGL_MAP or CUDA_MAP: env.pop("CUDA_VISIBLE_DEVICES", None)   # the client needs no CUDA; robosuite asserts EGL id in it
+    # 10-26 (shiva GPU 1 off the bus: every EGL client hangs in the NVIDIA modeset driver): ORCH_GL=osmesa renders on the CPU
+    if os.environ.get("ORCH_GL", "egl") == "osmesa":
+        env.update(MUJOCO_GL="osmesa", PYOPENGL_PLATFORM="osmesa", LP_NUM_THREADS=os.environ.get("LP_NUM_THREADS", "4"))
+        env.pop("MUJOCO_EGL_DEVICE_ID", None)
     vids = f"{VIDEOS_DIR}/{job_name}/{scene}"
-    logf = f"{LOGDIR}/eval_w{worker}.log"
+    logf = f"{LOGDIR}/eval_w{worker}_p{port}.log"   # 11-05: per port; concurrent orchestrators interleaved eval_w{worker}.log
     with open(logf, "a") as lf:
         lf.write(f"\n===== job={job_name} scene={scene} =====\n"); lf.flush()
-        subprocess.run([VENV_PY, "examples/libero/main.py", "--args.task-suite-name", suite,
+        extra = ["--args.state-offset", str(plan["state_offset"])] if plan.get("state_offset") else []
+        if plan.get("ood_shift"): extra += ["--args.ood-shift", str(plan["ood_shift"])]
+        if plan.get("dump_obs_dir"): extra += ["--args.dump-obs-path", f"{plan['dump_obs_dir']}/{job_name}/{scene}"]
+        if plan.get("dump_stride"): extra += ["--args.dump-stride", str(plan["dump_stride"])]
+        if plan.get("state_pool"): extra += ["--args.state-pool", str(plan["state_pool"])]
+        subprocess.run([VENV_PY, EVAL_SCRIPT, "--args.task-suite-name", suite, *extra,
                         "--args.task-name", scene, "--args.num-trials-per-task", str(NTRIALS),
                         f"--args.save-videos={SAVE_VIDEOS}",   # = form: safe for negative values (last-k)
                         "--args.port", str(port), "--args.video-out-path", vids],
@@ -135,6 +177,12 @@ def run_eval(scene, gpu, port, worker, job_name, suite="libero_90"):
     text = open(logf).read().split(f"===== job={job_name} scene={scene} =====")[-1]
     rates = re.findall(r"Total success rate: ([0-9.]+)", text)
     eps = re.findall(r"Total episodes: (\d+)", text)
+    prog = [float(x) for x in re.findall(r"PROGRESS: ([0-9.]+)", text)]
+    sstep = [int(x) for x in re.findall(r"SUCCESS_STEP: (-?\d+)", text)]
+    if prog or sstep:
+        EXTRA[(job_name, scene)] = {"progress": prog, "success_step": sstep}
+    nerr = text.count("Caught exception")   # 11-05: a server error (e.g. CUDA OOM) ends an episode as a FAILURE in the client
+    if nerr: return (None, -nerr)
     return (float(rates[-1]), int(eps[-1])) if rates and eps else (None, None)
 
 def worker_fn(worker, job_q):
@@ -168,7 +216,7 @@ def worker_fn(worker, job_q):
                 record({"job": job["name"], "method": job["method"], "params": job.get("params", {}),
                         "adapters": job["adapters"], "scene": scene, "n_trials": neps,
                         "success_rate": rate, "n_success": None if rate is None else round(rate * neps),
-                        "status": "ok" if rate is not None else "parse_fail", "secs": dt, "worker": worker})
+                        "status": "ok" if rate is not None else ("episode_error" if neps and neps < 0 else "parse_fail"), "secs": dt, "worker": worker})
                 log(worker, f"{job['name']}/{scene} -> rate={rate} n={neps} ({dt}s)")
         except Exception as ex:
             log(worker, f"{job['name']}: ERROR {ex}")

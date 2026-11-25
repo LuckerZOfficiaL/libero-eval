@@ -78,7 +78,9 @@ def _clear_orphaned_builds():
             _f.unlink(missing_ok=True)
 
 
-_clear_orphaned_builds()
+# NOTE: not called at import time. A chunked driver builds its adapters BEFORE its orchestrator
+# starts, so an import from an analysis script in that window deleted two live probe files
+# (EXP-32, 09-04 21:48). Drivers call it from main() only.
 
 def group_of(stem):
     if "vision_tower" in stem or "siglip" in stem:

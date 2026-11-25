@@ -1,0 +1,15 @@
+1. Use augmented checkpoints to increase learning signal (76 x 25 checkpoints)
+2. No feature engineering like we did but directly feed the LoRA weights directly into the hypernet we're gonna implement.
+2. Build the hypernetwork, like the one in the repo:
+
+Input: 2 LoRAs (one target, one candidate donor)
+
+Output: Merging coefficient (v2 will be layer-wise coefficient vector)
+
+Feed a target LoRA and a donor LoRA, Get a layerwise merging coefficient vector with values in [0, 1], Do the merge with those coefficients. 
+Run a few rollouts of the merged model on the target task, keeping the merged model frozen and do not update it.
+The loss can be the 1/(performance difference between target model and the merge)
+Compute the gradient on the rollouts and backpropagate to the hypernetwork.
+
+
+If you disagree with something, feel free to push back and propose alternatives.

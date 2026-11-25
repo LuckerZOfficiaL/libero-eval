@@ -1,0 +1,1108 @@
+{
+ "adapters": [
+  {
+   "task_index": 0,
+   "language": "put the moka pot on the stove",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task0/task0_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task0/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove"
+   ]
+  },
+  {
+   "task_index": 1,
+   "language": "put the yellow and white mug on the right plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task1/task1_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task1/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE5_put_the_yellow_and_white_mug_on_the_right_plate"
+   ]
+  },
+  {
+   "task_index": 2,
+   "language": "open the microwave",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task2/task2_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task2/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE7_open_the_microwave"
+   ]
+  },
+  {
+   "task_index": 3,
+   "language": "pick up the ketchup and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task3/task3_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task3/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE3_pick_up_the_ketchup_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 4,
+   "language": "pick up the chocolate pudding and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task4/task4_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task4/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE4_pick_up_the_chocolate_pudding_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 5,
+   "language": "pick up the milk and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task5/task5_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task5/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 6,
+   "language": "put the frying pan on the cabinet shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task6/task6_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task6/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "task_index": 7,
+   "language": "pick up the tomato sauce and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task7/task7_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task7/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_tomato_sauce_and_put_it_in_the_basket",
+    "LIVING_ROOM_SCENE2_pick_up_the_tomato_sauce_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 8,
+   "language": "pick up the book and place it in the right compartment of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task8/task8_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task8/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy",
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_right_compartment_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 9,
+   "language": "turn on the stove and put the frying pan on it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task9/task9_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task9/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_frying_pan_on_it",
+    "KITCHEN_SCENE9_turn_on_the_stove_and_put_the_frying_pan_on_it"
+   ]
+  },
+  {
+   "task_index": 10,
+   "language": "pick up the alphabet soup and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task10/task10_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task10/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE3_pick_up_the_alphabet_soup_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 11,
+   "language": "put the chocolate pudding in the top drawer of the cabinet and close it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task11/task11_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task11/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_put_the_chocolate_pudding_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "task_index": 12,
+   "language": "put the middle black bowl on top of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task12/task12_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task12/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 13,
+   "language": "put the frying pan on top of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task13/task13_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task13/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_on_top_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 14,
+   "language": "stack the black bowl at the front on the black bowl in the middle",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task14/task14_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task14/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle"
+   ]
+  },
+  {
+   "task_index": 15,
+   "language": "put the wine bottle on the wine rack",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task15/task15_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task15/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack"
+   ]
+  },
+  {
+   "task_index": 16,
+   "language": "put the black bowl in the bottom drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task16/task16_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task16/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 17,
+   "language": "pick up the book and place it in the back compartment of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task17/task17_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task17/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 18,
+   "language": "pick up the tomato sauce and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task18/task18_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task18/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_tomato_sauce_and_put_it_in_the_basket",
+    "LIVING_ROOM_SCENE2_pick_up_the_tomato_sauce_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 19,
+   "language": "pick up the book in the middle and place it on the cabinet shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task19/task19_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task19/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE4_pick_up_the_book_in_the_middle_and_place_it_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "task_index": 20,
+   "language": "open the top drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task20/task20_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task20/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet",
+    "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 21,
+   "language": "open the bottom drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task21/task21_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task21/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 22,
+   "language": "pick up the yellow and white mug and place it to the right of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task22/task22_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task22/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE1_pick_up_the_yellow_and_white_mug_and_place_it_to_the_right_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 23,
+   "language": "put the right moka pot on the stove",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task23/task23_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task23/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove"
+   ]
+  },
+  {
+   "task_index": 24,
+   "language": "put the butter at the back in the top drawer of the cabinet and close it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task24/task24_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task24/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_back_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "task_index": 25,
+   "language": "put the black bowl on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task25/task25_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task25/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate",
+    "KITCHEN_SCENE5_put_the_black_bowl_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 26,
+   "language": "pick up the book and place it in the front compartment of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task26/task26_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task26/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy",
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 27,
+   "language": "pick up the ketchup and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task27/task27_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task27/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_ketchup_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 28,
+   "language": "put the white mug on the left plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task28/task28_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task28/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate"
+   ]
+  },
+  {
+   "task_index": 29,
+   "language": "pick up the alphabet soup and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task29/task29_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task29/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_alphabet_soup_and_put_it_in_the_basket",
+    "LIVING_ROOM_SCENE2_pick_up_the_alphabet_soup_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 30,
+   "language": "put the middle black bowl on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task30/task30_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task30/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 31,
+   "language": "put the black bowl in the top drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task31/task31_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task31/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet",
+    "KITCHEN_SCENE5_put_the_black_bowl_in_the_top_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 32,
+   "language": "pick up the salad dressing and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task32/task32_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task32/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE4_pick_up_the_salad_dressing_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 33,
+   "language": "close the top drawer of the cabinet and put the black bowl on top of it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task33/task33_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task33/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it"
+   ]
+  },
+  {
+   "task_index": 34,
+   "language": "pick up the book and place it in the left compartment of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task34/task34_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task34/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy",
+    "STUDY_SCENE2_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy",
+    "STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_left_compartment_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 35,
+   "language": "pick up the red mug and place it to the right of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task35/task35_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task35/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE3_pick_up_the_red_mug_and_place_it_to_the_right_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 36,
+   "language": "pick up the butter and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task36/task36_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task36/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 37,
+   "language": "put the black bowl at the front on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task37/task37_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task37/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 38,
+   "language": "pick up the orange juice and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task38/task38_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task38/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_orange_juice_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 39,
+   "language": "put the yellow and white mug to the front of the white mug",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task39/task39_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task39/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE6_put_the_yellow_and_white_mug_to_the_front_of_the_white_mug"
+   ]
+  },
+  {
+   "task_index": 40,
+   "language": "pick up the tomato sauce and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task40/task40_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task40/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE3_pick_up_the_tomato_sauce_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 41,
+   "language": "put the black bowl on top of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task41/task41_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task41/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet",
+    "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet",
+    "KITCHEN_SCENE5_put_the_black_bowl_on_top_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 42,
+   "language": "pick up the cream cheese box and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task42/task42_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task42/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_cream_cheese_box_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 43,
+   "language": "put the white mug on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task43/task43_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task43/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 44,
+   "language": "stack the right bowl on the left bowl and place them in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task44/task44_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task44/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE4_stack_the_right_bowl_on_the_left_bowl_and_place_them_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 45,
+   "language": "close the bottom drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task45/task45_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task45/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 46,
+   "language": "close the top drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task46/task46_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task46/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet",
+    "KITCHEN_SCENE5_close_the_top_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 47,
+   "language": "put the frying pan on the stove",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task47/task47_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task47/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove"
+   ]
+  },
+  {
+   "task_index": 48,
+   "language": "put the red mug on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task48/task48_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task48/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE6_put_the_red_mug_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 49,
+   "language": "pick up the book on the right and place it on the cabinet shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task49/task49_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task49/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_on_the_cabinet_shelf"
+   ]
+  },
+  {
+   "task_index": 50,
+   "language": "close the bottom drawer of the cabinet and open the top drawer",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task50/task50_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task50/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet_and_open_the_top_drawer"
+   ]
+  },
+  {
+   "task_index": 51,
+   "language": "turn on the stove",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task51/task51_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task51/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE3_turn_on_the_stove",
+    "KITCHEN_SCENE9_turn_on_the_stove"
+   ]
+  },
+  {
+   "task_index": 52,
+   "language": "stack the left bowl on the right bowl and place them in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task52/task52_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task52/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE4_stack_the_left_bowl_on_the_right_bowl_and_place_them_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 53,
+   "language": "pick up the cream cheese and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task53/task53_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task53/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE3_pick_up_the_cream_cheese_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 54,
+   "language": "close the microwave",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task54/task54_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task54/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE6_close_the_microwave"
+   ]
+  },
+  {
+   "task_index": 55,
+   "language": "put the red mug on the right plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task55/task55_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task55/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate"
+   ]
+  },
+  {
+   "task_index": 56,
+   "language": "put the ketchup in the top drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task56/task56_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task56/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE5_put_the_ketchup_in_the_top_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 57,
+   "language": "pick up the butter and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task57/task57_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task57/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE2_pick_up_the_butter_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 58,
+   "language": "turn off the stove",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task58/task58_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task58/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE8_turn_off_the_stove"
+   ]
+  },
+  {
+   "task_index": 59,
+   "language": "put the red mug on the left plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task59/task59_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task59/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE5_put_the_red_mug_on_the_left_plate"
+   ]
+  },
+  {
+   "task_index": 60,
+   "language": "pick up the book on the left and place it on top of the shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task60/task60_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task60/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE4_pick_up_the_book_on_the_left_and_place_it_on_top_of_the_shelf"
+   ]
+  },
+  {
+   "task_index": 61,
+   "language": "put the chocolate pudding to the left of the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task61/task61_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task61/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE6_put_the_chocolate_pudding_to_the_left_of_the_plate"
+   ]
+  },
+  {
+   "task_index": 62,
+   "language": "pick up the alphabet soup and put it in the basket",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task62/task62_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task62/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE1_pick_up_the_alphabet_soup_and_put_it_in_the_basket",
+    "LIVING_ROOM_SCENE2_pick_up_the_alphabet_soup_and_put_it_in_the_basket"
+   ]
+  },
+  {
+   "task_index": 63,
+   "language": "put the black bowl at the back on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task63/task63_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task63/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 64,
+   "language": "put the frying pan under the cabinet shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task64/task64_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task64/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE9_put_the_frying_pan_under_the_cabinet_shelf"
+   ]
+  },
+  {
+   "task_index": 65,
+   "language": "stack the middle black bowl on the back black bowl",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task65/task65_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task65/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl"
+   ]
+  },
+  {
+   "task_index": 66,
+   "language": "pick up the black bowl on the left and put it in the tray",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task66/task66_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task66/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE4_pick_up_the_black_bowl_on_the_left_and_put_it_in_the_tray"
+   ]
+  },
+  {
+   "task_index": 67,
+   "language": "put the white bowl on top of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task67/task67_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task67/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE9_put_the_white_bowl_on_top_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 68,
+   "language": "put the white bowl on the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task68/task68_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task68/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE7_put_the_white_bowl_on_the_plate"
+   ]
+  },
+  {
+   "task_index": 69,
+   "language": "put the butter at the front in the top drawer of the cabinet and close it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task69/task69_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task69/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE10_put_the_butter_at_the_front_in_the_top_drawer_of_the_cabinet_and_close_it"
+   ]
+  },
+  {
+   "task_index": 70,
+   "language": "open the top drawer of the cabinet and put the bowl in it",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task70/task70_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task70/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet_and_put_the_bowl_in_it"
+   ]
+  },
+  {
+   "task_index": 71,
+   "language": "put the chocolate pudding to the right of the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task71/task71_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task71/adapter_config.json",
+   "scenes": [
+    "LIVING_ROOM_SCENE6_put_the_chocolate_pudding_to_the_right_of_the_plate"
+   ]
+  },
+  {
+   "task_index": 72,
+   "language": "pick up the white mug and place it to the right of the caddy",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task72/task72_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task72/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE3_pick_up_the_white_mug_and_place_it_to_the_right_of_the_caddy"
+   ]
+  },
+  {
+   "task_index": 73,
+   "language": "put the wine bottle in the bottom drawer of the cabinet",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task73/task73_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task73/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet"
+   ]
+  },
+  {
+   "task_index": 74,
+   "language": "put the white bowl to the right of the plate",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task74/task74_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task74/adapter_config.json",
+   "scenes": [
+    "KITCHEN_SCENE7_put_the_white_bowl_to_the_right_of_the_plate"
+   ]
+  },
+  {
+   "task_index": 75,
+   "language": "pick up the book on the right and place it under the cabinet shelf",
+   "adapter_file": "/media/pinas/mehdi/libero90_lora/task75/task75_adapter.safetensors",
+   "adapter_config": "/media/pinas/mehdi/libero90_lora/task75/adapter_config.json",
+   "scenes": [
+    "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_under_the_cabinet_shelf"
+   ]
+  },
+  {
+   "task_index": 76,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__open_the_middle_drawer_of_the_cabinet/adapter_model.safetensors",
+   "scenes": [
+    "open_the_middle_drawer_of_the_cabinet"
+   ],
+   "language": "open the middle drawer of the cabinet",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 77,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__open_the_top_drawer_and_put_the_bowl_inside/adapter_model.safetensors",
+   "scenes": [
+    "open_the_top_drawer_and_put_the_bowl_inside"
+   ],
+   "language": "open the top drawer and put the bowl inside",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 78,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__push_the_plate_to_the_front_of_the_stove/adapter_model.safetensors",
+   "scenes": [
+    "push_the_plate_to_the_front_of_the_stove"
+   ],
+   "language": "push the plate to the front of the stove",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 79,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_bowl_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "put_the_bowl_on_the_plate"
+   ],
+   "language": "put the bowl on the plate",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 80,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_bowl_on_the_stove/adapter_model.safetensors",
+   "scenes": [
+    "put_the_bowl_on_the_stove"
+   ],
+   "language": "put the bowl on the stove",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 81,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_bowl_on_top_of_the_cabinet/adapter_model.safetensors",
+   "scenes": [
+    "put_the_bowl_on_top_of_the_cabinet"
+   ],
+   "language": "put the bowl on top of the cabinet",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 82,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_cream_cheese_in_the_bowl/adapter_model.safetensors",
+   "scenes": [
+    "put_the_cream_cheese_in_the_bowl"
+   ],
+   "language": "put the cream cheese in the bowl",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 83,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_wine_bottle_on_the_rack/adapter_model.safetensors",
+   "scenes": [
+    "put_the_wine_bottle_on_the_rack"
+   ],
+   "language": "put the wine bottle on the rack",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 84,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__put_the_wine_bottle_on_top_of_the_cabinet/adapter_model.safetensors",
+   "scenes": [
+    "put_the_wine_bottle_on_top_of_the_cabinet"
+   ],
+   "language": "put the wine bottle on top of the cabinet",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 85,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_goal_no_noops__turn_on_the_stove/adapter_model.safetensors",
+   "scenes": [
+    "turn_on_the_stove"
+   ],
+   "language": "turn on the stove",
+   "suite": "libero_goal",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 86,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_alphabet_soup_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the alphabet soup and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 87,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_bbq_sauce_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the bbq sauce and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 88,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_butter_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_butter_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the butter and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 89,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_chocolate_pudding_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the chocolate pudding and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 90,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_cream_cheese_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the cream cheese and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 91,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_ketchup_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_ketchup_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the ketchup and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 92,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_milk_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_milk_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the milk and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 93,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_orange_juice_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_orange_juice_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the orange juice and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 94,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_salad_dressing_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the salad dressing and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 95,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_object_no_noops__pick_up_the_tomato_sauce_and_place_it_in_the_basket/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket"
+   ],
+   "language": "pick up the tomato sauce and place it in the basket",
+   "suite": "libero_object",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 96,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl between the plate and the ramekin and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 97,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl from table center and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 98,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 99,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl next to the cookie box and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 100,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_next_to_the_plate_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_next_to_the_plate_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl next to the plate and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 101,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl next to the ramekin and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 102,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl on the cookie box and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 103,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl on the ramekin and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 104,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl on the stove and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  },
+  {
+   "task_index": 105,
+   "adapter_file": "/home/lzhou/libero-eval/results/analysis/new_loras_s16/libero_spatial_no_noops__pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate/adapter_model.safetensors",
+   "scenes": [
+    "pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate"
+   ],
+   "language": "pick up the black bowl on the wooden cabinet and place it on the plate",
+   "suite": "libero_spatial",
+   "source": "s16_init"
+  }
+ ],
+ "n_workers": 4,
+ "worker_adapters": [
+  [
+   8,
+   7,
+   25,
+   51,
+   4,
+   11,
+   15,
+   21,
+   27,
+   33,
+   38,
+   43,
+   48,
+   53,
+   57,
+   61,
+   66,
+   70,
+   74
+  ],
+  [
+   26,
+   9,
+   29,
+   62,
+   5,
+   12,
+   16,
+   22,
+   28,
+   35,
+   39,
+   44,
+   49,
+   54,
+   58,
+   63,
+   67,
+   71,
+   75
+  ],
+  [
+   34,
+   18,
+   31,
+   0,
+   2,
+   6,
+   13,
+   17,
+   23,
+   30,
+   36,
+   40,
+   45,
+   50,
+   55,
+   59,
+   64,
+   68,
+   72
+  ],
+  [
+   41,
+   20,
+   46,
+   1,
+   3,
+   10,
+   14,
+   19,
+   24,
+   32,
+   37,
+   42,
+   47,
+   52,
+   56,
+   60,
+   65,
+   69,
+   73
+  ]
+ ],
+ "gpu_per_worker": [
+  1,
+  1,
+  2,
+  2
+ ],
+ "port_per_worker": [
+  8000,
+  8001,
+  8002,
+  8003
+ ],
+ "norm_stats": "/media/pinas/mehdi/libero90_lora/assets/libero90_norm_stats.json",
+ "base_model": "/media/pinas/Chris/models/pi05_base_pytorch/model.safetensors",
+ "n_trials": 25
+}

@@ -52,7 +52,7 @@ TASKS = {
     "libero_goal": ["open_the_middle_drawer_of_the_cabinet", "put_the_bowl_on_the_stove",
                     "put_the_wine_bottle_on_top_of_the_cabinet",
                     "open_the_top_drawer_and_put_the_bowl_inside",
-                    "put_the_black_bowl_on_the_plate", "put_the_wine_bottle_on_the_rack",
+                    "put_the_bowl_on_the_plate", "put_the_wine_bottle_on_the_rack",
                     "turn_on_the_stove", "put_the_cream_cheese_in_the_bowl",
                     "push_the_plate_to_the_front_of_the_stove", "put_the_bowl_on_top_of_the_cabinet"],
     "libero_spatial": ["pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate",

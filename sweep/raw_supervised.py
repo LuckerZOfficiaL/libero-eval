@@ -53,17 +53,27 @@ class RawPairNet(torch.nn.Module):
 
 
 def main():
+    import argparse
     from scipy import stats
-    tok = torch.load(REPO / "results/analysis/lora_tokens_raw.pt")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--tokens", default="results/analysis/lora_tokens_raw.pt")
+    ap.add_argument("--labels", default="results/analysis/pair_labels.json")
+    ap.add_argument("--feats", default="results/analysis/hypernet_feats.npz")
+    ap.add_argument("--baselines", default=None)
+    ap.add_argument("--holdout", default="random", choices=["random", "fleet", "new"])
+    ap.add_argument("--seeds", type=int, default=8)
+    ap.add_argument("--out", default="results/analysis/raw_supervised_report.txt")
+    a = ap.parse_args()
+    tok = torch.load(REPO / a.tokens)
     X, tasks = tok["X"], list(tok["tasks"])
     idx = {t: i for i, t in enumerate(tasks)}
-    _, groups, baseline = H.load(str(REPO / "results/analysis/pair_labels.json"))
+    _, groups, baseline = H.load(str(REPO / a.labels), feats=a.feats, baselines=a.baselines)
     print(f"[raw-sup] {len(groups)} target groups, {sum(len(g[1]) for g in groups)} labels, "
           f"tokens {tuple(X.shape)}", flush=True)
 
     gains = []
-    for seed in range(8):
-        tr, te, ho = H.split(groups, baseline, seed=seed)
+    for seed in range(a.seeds):
+        tr, te, ho = H.split(groups, baseline, seed=seed, mode=a.holdout)
         torch.manual_seed(seed); np.random.seed(seed)
         net = RawPairNet(X.shape[1], X.shape[2], X.shape[3])
         opt = torch.optim.AdamW(net.parameters(), lr=1e-3, weight_decay=1e-4)
@@ -90,7 +100,7 @@ def main():
 
     g = np.array(gains)
     t = stats.ttest_1samp(g, 0)
-    L = ["=== EXP-34: raw LoRA weights vs hand features, SAME labels and objective ===",
+    L = [f"=== raw LoRA weights (HyperConv encoder), labels={a.labels.split('/')[-1]} holdout={a.holdout} seeds={a.seeds} ===",
          "634 rollout-derived labels, binary 'is this donor good', leave-out-10-targets, 8 seeds", "",
          f"  RAW WEIGHTS  : {g.mean():+.2f}pp over random  (SE {stats.sem(g):.2f}, t={t.statistic:+.2f}, "
          f"p={t.pvalue:.3f})",
@@ -99,7 +109,7 @@ def main():
          "  raw >> features -> representation was the limit; more rollout budget is justified",
          "  raw <= features -> representation was never the limit, and the interaction is simply not",
          "                     recoverable from 76 adapters by any of these routes"]
-    open(REPO / "results/analysis/raw_supervised_report.txt", "w").write("\n".join(L) + "\n")
+    open(REPO / a.out, "w").write("\n".join(L) + "\n")
     print("\n".join(L), flush=True)
 
 

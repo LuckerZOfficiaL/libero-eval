@@ -9,3 +9,5 @@ sweep/plan_test.json
 sweep/_*_current.json
 # relocate.py backups
 *.bak
+# transient orchestrator gate / plan / state files (per-PID), written by the drivers
+sweep/_*.json

@@ -62,7 +62,9 @@ def _clear_orphaned_builds():
             _f.unlink(missing_ok=True)
 
 
-_clear_orphaned_builds()
+# NOTE: not called at import time. A chunked driver builds its adapters BEFORE its orchestrator
+# starts, so an import from an analysis script in that window deleted two live probe files
+# (EXP-32, 09-04 21:48). Drivers call it from main() only.
 
 def band_energy(donor):
     f = fold(donor)
@@ -133,6 +135,7 @@ def get(job, t):
 
 
 def main():
+    _clear_orphaned_builds()
     while subprocess.run(["pgrep", "-f", "merge_orchestrat[o]r.py"],
                          capture_output=True).returncode == 0:
         time.sleep(90)
