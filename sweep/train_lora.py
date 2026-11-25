@@ -454,20 +454,24 @@ def inflora_design(model, batch_loss, old, new, a):
                 batch_loss(prompt, samples, rng.choice(len(samples), a.batch, replace=False))
         for h in hs: h.remove()
         return {n: torch.cat(b) for n, b in buf.items() if b}
-    X_old, M, fr = collect(old, a.seed + 2), {}, []
+    X_old, M, fr, f2 = collect(old, a.seed + 2), {}, [], []
     for n, X in X_old.items():
         _, S, Vh = torch.linalg.svd(X.to(a.device, torch.float32), full_matrices=False)
         e = S ** 4; r = max(int((torch.cumsum(e, 0) / e.sum() < a.inflora).sum()), 1)
         M[n] = Vh[:r].T.cpu(); fr.append(r / X.shape[1])
+        e = S ** 2; f2.append(max(int((torch.cumsum(e, 0) / e.sum() < a.inflora).sum()), 1) / X.shape[1])   # diagnostic only
     del X_old
-    print(f"[inflora] old (library) input subspace: {len(M)} modules, rank / dim median {np.median(fr):.3f} max {max(fr):.3f} (threshold {a.inflora:g})", flush=True)
+    print(f"[inflora] old (library) input subspace: {len(M)} modules, rank / dim median {np.median(fr):.3f} max {max(fr):.3f} (threshold "
+          f"{a.inflora:g} on C's squared singular values, official); on C's eigenvalues it would be median {np.median(f2):.3f} max {max(f2):.3f}", flush=True)
     X_new, n_d = collect(new, a.seed + 3), 0
     for n, m in mods.items():
         if n in X_new:
             X = X_new[n].to(a.device, torch.float32); Mn = M[n].to(a.device); rk = m.lora_A["default"].weight.shape[0]
             Q, R = torch.linalg.qr(X.T - Mn @ (Mn.T @ X.T))
             U2 = torch.linalg.svd(R @ X, full_matrices=False)[0]
-            m.lora_A["default"].weight.data.copy_(((Q @ U2[:, :rk]).T / math.sqrt(3)).to(m.lora_A["default"].weight.dtype)); n_d += 1
+            W = torch.zeros(rk, X.shape[1], device=a.device); k = min(rk, U2.shape[1])   # fewer sampled rows than rk: the rest stay zero
+            W[:k] = (Q @ U2[:, :k]).T / math.sqrt(3)
+            m.lora_A["default"].weight.data.copy_(W.to(m.lora_A["default"].weight.dtype)); n_d += 1
         m.lora_A["default"].weight.requires_grad_(False)
         if float(m.lora_B["default"].weight.abs().max()) != 0: raise SystemExit(f"[inflora] {n}: B does not start at zero")
     print(f"[inflora] A designed from the new skills' inputs in {n_d} / {len(mods)} modules (the rest see no input); all A frozen", flush=True)

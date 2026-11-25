@@ -7096,3 +7096,12 @@ Li, CVPR 2024, interference-free subspace from input representations).
 - PRE-REGISTERED (11-25, before any EXP-174 result; sign rule, extends EXP-173): per budget (5 / 1 demos), all 24 skills pooled
   over 4 orders (seed 0): ours above O-LoRA and above InfLoRA. Expected shape (not a criterion): library above SeqFT (the
   constraint protects it), new skills below SeqFT (the constraint costs plasticity).
+- 11-25 10:20 smoke (odin P6000, 3 steps, batch 2, order 0 inputs): plain arm still 46.1M trainable (edits leave it unchanged);
+  O-LoRA 46.1M, A_old 256 rows x 458 / 458 modules, orth loss 2.5e5 at the start (task loss ~0.025; hence the separate clip);
+  InfLoRA 29.5M (B only), A rows at norm 1/sqrt 3, 456 / 458 modules designed (2 see no input). Fixed: a module with fewer
+  sampled rows than the rank (one row per sample, e.g. the time MLP, at smoke size) -> the missing A rows stay zero. CAVEAT:
+  the official criterion (on the covariance's SQUARED singular values) keeps a tiny old-input subspace on pi0.5 (median 0.1%
+  of the input dim, max 62%; on the eigenvalues it would be 3.5% / 81%): a few massive-activation directions hold the energy,
+  so InfLoRA protects the library little here. Run as published; logged for the discussion.
+- 11-25 10:24 chain82 started on shiva (tmux c82); scripts synced (train_lora 394049f6..., exp147 9e4c5f80..., chain82
+  6f5e7887...). Watcher includes chain82.log.
